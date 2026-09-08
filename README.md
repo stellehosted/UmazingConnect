@@ -1,6 +1,6 @@
-# SchoolConnect - berk prep club app
+# The Compass
 
-A modern, simple club-organizing app for Berkeley Prep School: students can push updates, create club pages, manage leadership, and more...
+A modern, simple club-organizing app for BPS: students can push updates, create club pages, manage leadership, and more...
 
 ## Features
 
@@ -29,12 +29,7 @@ A modern, simple club-organizing app for Berkeley Prep School: students can push
 ## Wanna try it yourself?
 
 ### 1. Clone and Install
-
-```bash
-git clone <your-repo-url>
-cd school-social-app
 npm install
-```
 
 ### 2. Quick Start (Demo Mode)
 
@@ -123,5 +118,3 @@ For support or questions:
 - Open an issue in the repository
 
 ---
-
-**Made with blue and white spirit for Berk Prep**

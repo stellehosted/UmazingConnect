@@ -192,9 +192,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return
           }
           
-          // Check if email is from Berkeley Prep
+          // Check if email is from BPS
           if (!isBerkeleyPrepEmail(userInfo.email)) {
-            alert("Only Berkeley Prep School email addresses are allowed to access this application.")
+            alert("Only BPS School email addresses are allowed to access this application.")
             logout()
             return
           }
@@ -225,9 +225,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (account.username) {
             console.log("Using fallback account info:", account)
             
-            // Check if email is from Berkeley Prep
+            // Check if email is from BPS
             if (!isBerkeleyPrepEmail(account.username)) {
-              alert("Only Berkeley Prep School email addresses are allowed to access this application.")
+              alert("Only BPS School email addresses are allowed to access this application.")
               logout()
               return
             }

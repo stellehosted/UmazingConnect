@@ -29,11 +29,11 @@ export const loginRequest: PopupRequest = {
   scopes: ["User.Read", "User.ReadBasic.All", "email", "profile", "openid"],
 }
 
-// Berkeley Prep School domain validation
+// BPS School domain validation
 export const ALLOWED_DOMAINS = [
   "berkeleyprep.org",
   "berkeleyprep.com",
-  // Add any other official Berkeley Prep domains here
+  // Add any other official BPS domains here
 ]
 
 export const isBerkeleyPrepEmail = (email: string | undefined | null): boolean => {

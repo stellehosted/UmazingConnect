@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import {
   Users,
@@ -379,15 +378,6 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                     return (
                       <div key={post.id} className="border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
                         <div className="flex items-center gap-2 sm:gap-3">
-                          <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                            <AvatarImage src={post.author_avatar || "/placeholder.svg"} />
-                            <AvatarFallback className="text-xs">
-                              {post.author_name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
                           <div className="min-w-0 flex-1">
                             <p className="font-medium text-xs sm:text-sm truncate">{post.author_name}</p>
                             <p className="text-xs text-muted-foreground">
@@ -525,15 +515,6 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                 <div className="space-y-3">
                   {club.presidents.map((president) => (
                     <div key={president.id} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                      <Avatar className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
-                        <AvatarImage src={president.avatar_url || "/placeholder.svg"} />
-                        <AvatarFallback className="text-xs sm:text-sm">
-                          {president.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm sm:text-base truncate">{president.name}</p>
                         <p className="text-xs sm:text-sm text-muted-foreground truncate">{president.email}</p>
@@ -558,15 +539,6 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                 <div className="space-y-3">
                   {club.sponsors.map((sponsor) => (
                     <div key={sponsor.id} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                      <Avatar className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
-                        <AvatarImage src={sponsor.avatar_url || "/placeholder.svg"} />
-                        <AvatarFallback className="text-xs sm:text-sm">
-                          {sponsor.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm sm:text-base truncate">{sponsor.name}</p>
                         <p className="text-xs sm:text-sm text-muted-foreground truncate">{sponsor.email}</p>
@@ -592,15 +564,6 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                   const RoleIcon = roleIcons[member.role as keyof typeof roleIcons] || Users
                   return (
                     <div key={member.id} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                      <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                        <AvatarImage src={member.avatar_url || "/placeholder.svg"} />
-                        <AvatarFallback className="text-xs">
-                          {member.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs sm:text-sm font-medium truncate">{member.name}</p>
                         <p className="text-xs text-muted-foreground capitalize flex items-center gap-1">

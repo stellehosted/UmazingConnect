@@ -1,4 +1,4 @@
--- Performance Optimization Indexes for BerkConnect
+-- Performance Optimization Indexes for The Compass
 -- Run this to improve query performance
 
 -- ============================================

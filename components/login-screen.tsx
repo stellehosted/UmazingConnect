@@ -1,14 +1,186 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, Users, BookOpen, MessageCircle, RefreshCw, Zap, Heart } from "lucide-react"
+import { useEffect, useState, type CSSProperties } from "react"
+import localFont from "next/font/local"
+import { RefreshCw } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
+import { CompassHero } from "@/components/compass-hero"
+
+const berkeley = localFont({
+  src: "../fonts/BerkeleyStd-Black.otf",
+  weight: "900",
+  display: "swap",
+})
+
+// "Avenir" in the Sketch document. It ships with macOS/iOS; elsewhere this
+// falls back through the closest available humanist sans.
+const AVENIR = 'Avenir, "Avenir Next", "Nunito Sans", system-ui, sans-serif'
+
+const BG = "#011321"
+
+// Every position, size and type spec below is taken from the "Landing" frame
+// in The Compass.sketch, which is designed on a 1920x1080 canvas. Converting
+// to cqw locks the whole layout to the design's proportions at any width.
+const STAGE_W = 1920
+const pct = (v: number) => `${(v / STAGE_W) * 100}cqw`
+
+// The stage always covers the viewport, pinned bottom-right, so the compass
+// bleeds off the real window edges instead of being clipped at an inset
+// boundary, and the content column is never cropped.
+const stageStyle: CSSProperties = {
+  containerType: "inline-size",
+  width: "max(100vw, calc(100dvh * 16 / 9))",
+  height: "max(100dvh, calc(100vw * 9 / 16))",
+}
+
+const compassStyle: CSSProperties = {
+  position: "absolute",
+  left: pct(-1190),
+  top: pct(-787),
+  width: pct(2380),
+  height: pct(2380),
+  pointerEvents: "none",
+}
+
+// Where the dial sits inside the artwork's own 2380x2380 box. The dial is not
+// centred in it — the mounting loop hangs above — so placement has to work off
+// the dial's centre and radius rather than the image's bounds.
+const DIAL_CENTER_RATIO = 1427.09355 / 2380
+const RIM_RADIUS_RATIO = 801.297656 / 2380
+const FACE_RADIUS_RATIO = 610.107422 / 2380
+
+// The dial's centre sits on the top edge, so the circle is at its widest
+// exactly there. Sizing the light face to 55vw of radius — comfortably past
+// the 50vw half-width of the screen — pushes the blue rim off the viewport
+// along that top edge.
+const FACE_R_VW = 55
+const COMPASS_VW = FACE_R_VW / FACE_RADIUS_RATIO
+
+// The visible arc is the rim's radius: below the top edge the circle narrows,
+// so the rim curves back into view and closes off the bottom of the arc.
+const BAND_VW = RIM_RADIUS_RATIO * COMPASS_VW
+
+// Pull the image up so the dial's centre — not the image's centre — lands on
+// the top edge, then crop to the band depth above.
+const portraitCompassStyle: CSSProperties = {
+  position: "absolute",
+  left: "50%",
+  top: `${-DIAL_CENTER_RATIO * COMPASS_VW}vw`,
+  width: `${COMPASS_VW}vw`,
+  height: `${COMPASS_VW}vw`,
+  transform: "translateX(-50%)",
+  pointerEvents: "none",
+}
+
+const portraitBandStyle: CSSProperties = {
+  height: `${BAND_VW}vw`,
+}
+
+// Title: 144, centred, tracking -6. Its box centre (1370.5) lines up with the
+// button's (1370), so the two stay optically stacked.
+const titleStyle: CSSProperties = {
+  position: "absolute",
+  left: pct(973),
+  top: pct(461),
+  width: pct(795),
+  height: pct(144),
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: pct(144),
+  letterSpacing: `${-6 / 144}em`,
+  lineHeight: 1,
+  color: "#ffffff",
+  whiteSpace: "nowrap",
+}
+
+const buttonStyle: CSSProperties = {
+  position: "absolute",
+  left: pct(1170),
+  top: pct(653),
+  width: pct(400),
+  height: pct(120),
+  borderRadius: "9999px",
+  background: "#56a0d3",
+  color: "#000000",
+  fontFamily: AVENIR,
+  fontWeight: 900,
+  fontSize: pct(50),
+  letterSpacing: 0,
+}
+
+// "Made with love": Avenir Book, 30, right aligned.
+const footerStyle: CSSProperties = {
+  position: "absolute",
+  right: pct(1920 - 1495 - 361),
+  bottom: pct(1080 - 967 - 82),
+  width: pct(361),
+  fontFamily: AVENIR,
+  fontWeight: 400,
+  fontSize: pct(30),
+  lineHeight: 82 / 2 / 30,
+  color: "#ffffff",
+  textAlign: "right",
+}
+
+const portraitTitleStyle: CSSProperties = {
+  fontSize: "clamp(3rem, 12vw, 6rem)",
+  letterSpacing: `${-6 / 144}em`,
+  lineHeight: 1,
+  color: "#ffffff",
+}
+
+const portraitButtonStyle: CSSProperties = {
+  fontFamily: AVENIR,
+  fontWeight: 900,
+  fontSize: "clamp(1.25rem, 5vw, 2rem)",
+  width: "clamp(200px, 52vw, 380px)",
+  height: "clamp(3.5rem, 14vw, 5rem)",
+  background: "#56a0d3",
+  color: "#000000",
+}
+
+const portraitFooterStyle: CSSProperties = {
+  fontFamily: AVENIR,
+  fontWeight: 400,
+  fontSize: "clamp(0.875rem, 3.2vw, 1.25rem)",
+  color: "#ffffff",
+  bottom: "calc(2rem + env(safe-area-inset-bottom))",
+}
 
 export function LoginScreen() {
   const { login, isLoading } = useAuth()
   const [showReset, setShowReset] = useState(false)
+
+  // iOS Safari tints its chrome from the document background and theme-colour,
+  // not from this screen's own container, so a full-bleed splash otherwise
+  // shows white bars above and below. Both are restored on unmount so the rest
+  // of the app keeps its normal light theme.
+  useEffect(() => {
+    const body = document.body
+    const previousBackground = body.style.backgroundColor
+    body.style.backgroundColor = BG
+
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    const createdMeta = !meta
+    const previousContent = meta?.content
+
+    if (!meta) {
+      meta = document.createElement("meta")
+      meta.name = "theme-color"
+      document.head.appendChild(meta)
+    }
+    meta.content = BG
+
+    return () => {
+      body.style.backgroundColor = previousBackground
+      if (createdMeta) {
+        meta?.remove()
+      } else if (meta && previousContent !== undefined) {
+        meta.content = previousContent
+      }
+    }
+  }, [])
 
   const handleMicrosoftLogin = async () => {
     try {
@@ -42,115 +214,101 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4 stripe-pattern">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-6 sm:gap-12 items-center">
-        {/* Left side - Branding and features */}
-        <div className="space-y-6 sm:space-y-8">
-          <div className="text-center lg:text-left">
-            {/* Title with neo-brutalist styling */}
-            <div className="flex items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="p-3 sm:p-4 bg-primary border-2 border-foreground shadow-brutal">
-                <GraduationCap className="h-8 w-8 sm:h-10 sm:w-10 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight">
-                  BERK<span className="text-secondary">CONNECT</span>
-                </h1>
-                <div className="h-1 sm:h-1.5 bg-secondary mt-1 sm:mt-2" />
-              </div>
-            </div>
-
-            <p className="text-base sm:text-xl text-muted-foreground leading-relaxed px-2 sm:px-0 font-medium">
-              Connect with your school community. Share updates, join clubs, and stay informed about campus life.
-            </p>
-          </div>
-
-          {/* Feature highlights - Neo-brutalist cards */}
-          <div className="hidden sm:grid gap-4">
-            {[
-              { icon: Users, title: "Connect with Classmates", desc: "Build your school network", rotate: "-1deg" },
-              { icon: BookOpen, title: "Join Clubs & Activities", desc: "Discover new interests", rotate: "0.5deg" },
-              { icon: MessageCircle, title: "Stay Updated", desc: "Never miss announcements", rotate: "-0.5deg" },
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-4 p-4 bg-card border-2 border-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all cursor-default"
-                style={{ transform: `rotate(${feature.rotate})` }}
-              >
-                <div className="p-2 sm:p-3 bg-secondary border-2 border-foreground flex-shrink-0">
-                  <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-secondary-foreground" />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="font-bold text-sm sm:text-base text-card-foreground uppercase tracking-wide">
-                    {feature.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="relative h-[100dvh] w-full overflow-hidden" style={{ background: BG }}>
+      {/* Landscape gets the Sketch composition at any size; portrait — phone or
+          tablet — gets the stacked one. Branching on orientation rather than
+          width keeps a landscape phone off the portrait layout, whose vw-based
+          compass would otherwise swallow the short viewport. */}
+      <div className="hidden landscape:block absolute right-0 bottom-0 overflow-hidden" style={stageStyle}>
+        <div style={compassStyle}>
+          <CompassHero className="w-full h-full" followPointer />
         </div>
 
-        {/* Right side - Login form */}
-        <div className="flex justify-center">
-          <Card className="w-full max-w-md hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all">
-            <CardHeader className="text-center space-y-2 sm:space-y-3">
-              <div className="mx-auto w-fit">
-                <span className="inline-block px-3 py-1 bg-secondary text-secondary-foreground text-xs font-bold uppercase tracking-widest border-2 border-foreground transform -rotate-2">
-                  Go Bucs!
-                </span>
-              </div>
-              <CardTitle className="text-2xl sm:text-3xl">Welcome Back</CardTitle>
-              <CardDescription className="text-sm sm:text-base">
-                Sign in with your school Microsoft account to continue
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 sm:space-y-6">
-              <Button
-                onClick={handleMicrosoftLogin}
-                className="w-full h-12 sm:h-14 text-sm sm:text-base"
-                size="lg"
-                disabled={isLoading}
-              >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zM24 11.4H12.6V0H24v11.4z" />
-                </svg>
-                {isLoading ? "Signing in..." : "Continue with Microsoft"}
-              </Button>
+        <h1 className={berkeley.className} style={titleStyle}>
+          The Compass
+        </h1>
 
-              {/* Reset button for stuck auth state */}
-              {showReset && (
-                <div className="space-y-3">
-                  <div className="text-center text-xs sm:text-sm font-bold text-secondary-foreground bg-secondary p-3 border-2 border-foreground">
-                    Login stuck? Try resetting the authentication state.
-                  </div>
-                  <Button
-                    onClick={handleReset}
-                    variant="outline"
-                    className="w-full h-10 sm:h-11"
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Reset & Try Again
-                  </Button>
-                </div>
-              )}
+        <button
+          type="button"
+          onClick={handleMicrosoftLogin}
+          disabled={isLoading}
+          style={buttonStyle}
+          className="cursor-pointer transition-colors hover:bg-[#4a91c2] disabled:opacity-60"
+        >
+          {isLoading ? "Signing in..." : "Log In"}
+        </button>
 
-              <div className="text-center border-t-2 border-foreground pt-4">
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium px-2">
-                  By signing in, you agree to our Terms of Service and Privacy Policy
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {showReset && (
+          <div
+            className="absolute flex flex-col items-center gap-[1cqw] text-center text-white"
+            style={{ left: pct(1170), top: pct(820), width: pct(400), fontFamily: AVENIR, fontSize: pct(22) }}
+          >
+            <p className="opacity-70">Login stuck? Try resetting the authentication state.</p>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="inline-flex items-center gap-[0.5cqw] rounded-full bg-white/10 px-[1.5cqw] py-[0.6cqw] hover:bg-white/20"
+            >
+              <RefreshCw className="h-[1.2cqw] w-[1.2cqw]" />
+              Reset &amp; Try Again
+            </button>
+          </div>
+        )}
+
+        <p style={footerStyle}>
+          Made with love
+          <br />
+          by Computer Science Club
+        </p>
       </div>
 
-      {/* Decorative elements */}
-      <div className="fixed bottom-4 left-4 hidden lg:block">
-        <div className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground border-2 border-foreground shadow-brutal text-xs font-bold uppercase">
-          <Heart className="h-4 w-4" />
-            Made with ❤️ by BPS Computer Science Club
+      {/* Portrait: the dial is centred on the top centre of the viewport, the
+          same way the landscape layout centres it on the frame's left edge. */}
+      <div className="landscape:hidden absolute inset-0 flex flex-col">
+        <div className="relative shrink-0" style={portraitBandStyle}>
+          <div style={portraitCompassStyle}>
+            <CompassHero className="h-full w-full" followPointer />
+          </div>
         </div>
+
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 pb-28 text-center">
+          <h1 className={berkeley.className} style={portraitTitleStyle}>
+            The Compass
+          </h1>
+
+          <button
+            type="button"
+            onClick={handleMicrosoftLogin}
+            disabled={isLoading}
+            style={portraitButtonStyle}
+            className="rounded-full transition-colors hover:bg-[#4a91c2] disabled:opacity-60"
+          >
+            {isLoading ? "Signing in..." : "Log In"}
+          </button>
+
+          {showReset && (
+            <div
+              className="flex flex-col items-center gap-2 text-sm text-white"
+              style={{ fontFamily: AVENIR }}
+            >
+              <p className="opacity-70">Login stuck? Try resetting the authentication state.</p>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 hover:bg-white/20"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Reset &amp; Try Again
+              </button>
+            </div>
+          )}
+        </div>
+
+        <p style={portraitFooterStyle} className="absolute inset-x-0 text-center">
+          Made with love
+          <br />
+          by Computer Science Club
+        </p>
       </div>
     </div>
   )

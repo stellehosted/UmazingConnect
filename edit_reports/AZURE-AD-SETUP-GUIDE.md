@@ -29,7 +29,7 @@
 
 Look for an app named something like:
 - "SchoolConnect"
-- "Berkeley Prep School App"
+- "BPS School App"
 - Or any app you created for this project
 
 **If you don't see your app:**

@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Select,
@@ -498,12 +497,6 @@ export function AdminDashboard({ userId }: { userId: string }) {
               <Card key={post.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-10 w-10 flex-shrink-0">
-                      <AvatarImage src={post.author_avatar || "/placeholder.svg"} />
-                      <AvatarFallback>
-                        {post.author_name.split(" ").map((n) => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <div>
@@ -625,12 +618,6 @@ export function AdminDashboard({ userId }: { userId: string }) {
                         className="flex items-center justify-between p-3 rounded-lg border"
                       >
                         <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9">
-                            <AvatarImage src={member.avatar_url || "/placeholder.svg"} />
-                            <AvatarFallback>
-                              {member.name.split(" ").map((n) => n[0]).join("")}
-                            </AvatarFallback>
-                          </Avatar>
                           <div>
                             <p className="font-medium text-sm">{member.name}</p>
                             <div className="flex items-center gap-2">

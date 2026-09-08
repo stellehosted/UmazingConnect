@@ -1,6 +1,6 @@
 {
-  "name": "BerkConnect",
-  "short_name": "BerkConnect",
+  "name": "The Compass",
+  "short_name": "The Compass",
   "description": "Connect with your school community. Share updates, join clubs, and stay informed about campus life.",
   "start_url": "/",
   "scope": "/",

@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Home, Users, Bell, GraduationCap, Settings, LogOut, Menu, HelpCircle } from "lucide-react"
+import { Home, Users, Bell, Settings, LogOut, Menu, HelpCircle, User } from "lucide-react"
 import { UserProfile } from "@/lib/auth-config"
 import { UserSettingsDialog } from "./user-settings-dialog"
+import { Logo } from "./logo"
 import Link from "next/link"
 
 type ActiveSection = "home" | "clubs"
@@ -85,12 +85,10 @@ export function Navigation({ activeSection, onSectionChange, user, onLogout }: N
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo and brand */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-primary border-2 border-foreground shadow-brutal-sm">
-              <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
-            </div>
+            <Logo className="h-8 w-8 sm:h-9 sm:w-9" />
             <div>
               <span className="text-base sm:text-xl font-black text-foreground tracking-tight">
-                BERK<span className="text-secondary">CONNECT</span>
+                The<span className="text-secondary"> Compass</span>
               </span>
             </div>
           </div>
@@ -134,13 +132,8 @@ export function Navigation({ activeSection, onSectionChange, user, onLogout }: N
               <>
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 sm:h-11 sm:w-11 p-0 hidden md:flex border-2 border-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all">
-                      <Avatar className="h-full w-full">
-                        <AvatarImage src={user.profilePicture || "/placeholder-user.jpg"} alt="Profile" />
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs sm:text-sm font-bold">
-                          {user.name?.split(" ").map(n => n[0]).join("") || "U"}
-                        </AvatarFallback>
-                      </Avatar>
+                    <Button variant="ghost" className="relative h-10 w-10 sm:h-11 sm:w-11 p-0 hidden md:flex items-center justify-center bg-primary text-primary-foreground border-2 border-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all">
+                      <User className="h-5 w-5 sm:h-6 sm:w-6" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 border-2 border-foreground shadow-brutal" align="end" forceMount>
@@ -211,12 +204,9 @@ export function Navigation({ activeSection, onSectionChange, user, onLogout }: N
                   {user && (
                     <>
                       <div className="flex items-center gap-3 p-3 bg-secondary/10 border-b-2 border-foreground -m-1 mb-1">
-                        <Avatar className="h-10 w-10 border-2 border-foreground">
-                          <AvatarImage src={user.profilePicture || "/placeholder-user.jpg"} alt="Profile" />
-                          <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
-                            {user.name?.split(" ").map(n => n[0]).join("") || "U"}
-                          </AvatarFallback>
-                        </Avatar>
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center bg-primary text-primary-foreground border-2 border-foreground">
+                          <User className="h-5 w-5" />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-bold leading-none truncate uppercase">{user.name || "User"}</p>
                           <p className="text-xs leading-none text-muted-foreground mt-1 truncate">{user.email}</p>

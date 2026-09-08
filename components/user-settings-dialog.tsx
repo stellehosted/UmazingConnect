@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -116,12 +115,6 @@ export function UserSettingsDialog({ open, onOpenChange, user, isTeacher }: User
         <div className="space-y-4">
           {/* User Info */}
           <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={user.profilePicture || "/placeholder.svg"} alt={user.name} />
-              <AvatarFallback className="text-xl">
-                {user.name.split(" ").map(n => n[0]).join("")}
-              </AvatarFallback>
-            </Avatar>
             <div className="flex-1 space-y-1">
               <h3 className="font-semibold text-lg">{user.name}</h3>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

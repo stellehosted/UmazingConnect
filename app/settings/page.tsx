@@ -6,7 +6,6 @@ import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -139,14 +138,8 @@ export default function SettingsPage() {
           <CardDescription>Your account details and role</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Avatar and Basic Info */}
+          {/* Basic Info */}
           <div className="flex items-start gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={user.profilePicture || "/placeholder.svg"} alt={user.name} />
-              <AvatarFallback className="text-2xl">
-                {user.name.split(" ").map(n => n[0]).join("")}
-              </AvatarFallback>
-            </Avatar>
             <div className="flex-1 space-y-2">
               <h2 className="text-2xl font-bold">{user.name}</h2>
               <div className="flex flex-wrap gap-2">

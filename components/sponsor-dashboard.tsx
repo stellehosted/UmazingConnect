@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Shield, Users, AlertCircle, CheckCircle, XCircle, Clock } from "lucide-react"
 import Link from "next/link"
 
@@ -170,12 +169,6 @@ export function SponsorDashboard({ userId }: { userId: string }) {
                 <div key={request.id} className="border rounded-lg p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <Avatar className="h-10 w-10 flex-shrink-0">
-                        <AvatarImage src={request.target_avatar || "/placeholder.svg"} />
-                        <AvatarFallback>
-                          {request.target_name.split(" ").map(n => n[0]).join("")}
-                        </AvatarFallback>
-                      </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{request.target_name}</p>
                         <p className="text-sm text-muted-foreground truncate">{request.target_email}</p>

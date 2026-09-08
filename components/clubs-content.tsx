@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Dialog,
@@ -322,15 +321,6 @@ export function ClubsContent() {
 
           {club.is_claimed && club.president_name && (
             <div className="flex items-center gap-2 min-w-0 p-2 bg-muted/50 border border-foreground/20">
-              <Avatar className="h-6 w-6 sm:h-7 sm:w-7 flex-shrink-0 border-2 border-foreground">
-                <AvatarImage src={club.president_avatar || "/placeholder.svg"} alt={club.president_name} />
-                <AvatarFallback className="text-xs bg-primary text-primary-foreground font-bold">
-                  {club.president_name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
               <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1 truncate font-medium">
                 <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0 text-secondary" />
                 <span className="truncate">{club.president_name}</span>

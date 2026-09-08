@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Heart, Users, Loader2, Newspaper } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
@@ -196,18 +195,6 @@ export function HomeContent() {
                 <CardHeader className="pb-3 sm:pb-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <Link href={`/clubs/${post.club_id}`} className="flex-shrink-0">
-                        <Avatar className="h-11 w-11 sm:h-12 sm:w-12 border-2 border-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all">
-                          <AvatarImage src={post.club_avatar || "/placeholder.svg"} alt={post.club_name || "Club"} />
-                          <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
-                            {(post.club_name || "C")
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .substring(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Link href={`/clubs/${post.club_id}`} className="hover:underline underline-offset-2">

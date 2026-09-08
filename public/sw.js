@@ -1,4 +1,4 @@
-// Service Worker for BerkConnect Push Notifications
+// Service Worker for The Compass Push Notifications
 
 const CACHE_NAME = 'schoolconnect-v1'
 
@@ -29,8 +29,8 @@ self.addEventListener('push', (event) => {
 
   // Default notification data - always have a fallback
   let data = {
-    title: 'BerkConnect',
-    body: 'New notification from BerkConnect',
+    title: 'The Compass',
+    body: 'New notification from The Compass',
     url: '/',
   }
 
@@ -61,6 +61,7 @@ self.addEventListener('push', (event) => {
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     vibrate: [100, 50, 100],
+    timestamp: Date.now(),
     data: {
       url: data.url || '/',
       notificationId: data.notificationId,
@@ -77,7 +78,10 @@ self.addEventListener('push', (event) => {
         title: 'Dismiss',
       },
     ],
-    tag: data.tag || 'schoolconnect-notification',
+    // Android collapses notifications that share a tag. Using one constant tag
+    // meant every club post overwrote the previous one; key off the actual
+    // notification so unrelated items stack in the shade instead.
+    tag: data.tag || data.notificationId || `schoolconnect-${Date.now()}`,
     renotify: true,
   }
 
@@ -98,13 +102,23 @@ self.addEventListener('notificationclick', (event) => {
   const urlToOpen = event.notification.data?.url || '/'
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (windowClients) => {
       // Check if there's already a window open
       for (const client of windowClients) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
-          client.focus()
-          client.navigate(urlToOpen)
-          return
+        if (client.url.startsWith(self.location.origin) && 'focus' in client) {
+          try {
+            await client.focus()
+            // navigate() rejects on clients this worker doesn't control, which
+            // happens on Android when the PWA was opened before the worker
+            // activated. Fall through to openWindow in that case.
+            if ('navigate' in client) {
+              await client.navigate(urlToOpen)
+            }
+            return
+          } catch (error) {
+            console.log('[SW] Could not reuse existing window:', error)
+            break
+          }
         }
       }
       // If no window is open, open a new one

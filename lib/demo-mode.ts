@@ -7,7 +7,7 @@ export const DEMO_USER: any = {
   name: "Demo User",
   role: "student",
   grade: "11",
-  bio: "This is a demo account for testing the BerkConnect interface.",
+  bio: "This is a demo account for testing the The Compass interface.",
   interests: ["Technology", "Science", "Music"],
   profilePicture: "/placeholder-user.jpg",
   createdAt: new Date(),

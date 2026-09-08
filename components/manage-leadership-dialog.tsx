@@ -14,7 +14,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { UserCog, Crown, Users, Trash2, Plus } from "lucide-react"
 
 interface ClubMember {
@@ -215,12 +214,6 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
                   return (
                     <div key={leader.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 border rounded-lg">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                        <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                          <AvatarImage src={leader.avatar_url || "/placeholder.svg"} alt={leader.name} />
-                          <AvatarFallback className="text-xs">
-                            {leader.name.split(" ").map(n => n[0]).join("")}
-                          </AvatarFallback>
-                        </Avatar>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-sm sm:text-base truncate">{leader.name}</p>
                           <p className="text-xs sm:text-sm text-muted-foreground truncate">{leader.email}</p>
@@ -297,12 +290,6 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
                 {members.map((member) => (
                   <div key={member.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 border rounded-lg">
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                      <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0">
-                        <AvatarImage src={member.avatar_url || "/placeholder.svg"} alt={member.name} />
-                        <AvatarFallback className="text-xs">
-                          {member.name.split(" ").map(n => n[0]).join("")}
-                        </AvatarFallback>
-                      </Avatar>
                       <div className="min-w-0 flex-1">
                         <p className="font-medium text-sm sm:text-base truncate">{member.name}</p>
                         <p className="text-xs sm:text-sm text-muted-foreground truncate">{member.email}</p>

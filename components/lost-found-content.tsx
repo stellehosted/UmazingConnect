@@ -17,7 +17,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Search, Plus, MapPin, Calendar, Phone, Mail, Package, Smartphone, Book, Shirt, Key, Upload, X, Image as ImageIcon } from "lucide-react"
 
 interface LostFoundItem {
@@ -603,15 +602,6 @@ export function LostFoundContent() {
 
                     {/* Reporter */}
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={item.reporter.avatar || "/placeholder.svg"} alt={item.reporter.name} />
-                        <AvatarFallback className="text-xs">
-                          {item.reporter.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
                       <span className="text-sm text-muted-foreground">Reported by {item.reporter.name}</span>
                     </div>
 

@@ -13,7 +13,7 @@ export class UserService {
   constructor(config: UserServiceConfig = {}) {
     this.userRepository = new UserRepository()
     this.config = {
-      allowedEmailDomains: ['berkeleyprep.org', 'school.edu'], // Default Berkeley Prep domains
+      allowedEmailDomains: ['berkeleyprep.org', 'school.edu'], // Default BPS domains
       requireEmailDomain: true,
       ...config
     }
@@ -116,7 +116,7 @@ export class UserService {
       throw new Error('Invalid email format')
     }
 
-    // Validate email domain for Berkeley Prep
+    // Validate email domain for BPS
     if (this.config.requireEmailDomain && !this.isValidEmailDomain(userData.email)) {
       const allowedDomains = this.config.allowedEmailDomains?.join(', ') || 'berkeleyprep.org'
       throw new Error(`Email must be from an allowed domain: ${allowedDomains}`)

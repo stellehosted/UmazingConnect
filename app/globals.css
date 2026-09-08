@@ -4,7 +4,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Neo-Brutalist Berkeley Prep Color Palette */
   /* Navy: #003262, Light Blue: #5DADE2, White */
 
   --background: oklch(0.98 0.01 230); /* Cool off-white */
@@ -39,7 +38,7 @@
   --input: oklch(1 0 0);
   --ring: oklch(0.70 0.12 230); /* Light blue focus ring */
 
-  /* Chart colors with Berkeley Prep palette */
+  /* Chart colors with BPS palette */
   --chart-1: oklch(0.30 0.12 258); /* Navy */
   --chart-2: oklch(0.70 0.12 230); /* Light Blue */
   --chart-3: oklch(0.50 0.15 258); /* Medium blue */
@@ -54,7 +53,7 @@
   --shadow-brutal-accent: 4px 4px 0px 0px oklch(0.70 0.12 230);
   --border-width: 2px;
 
-  /* Sidebar with Berkeley Prep colors */
+  /* Sidebar with BPS colors */
   --sidebar: oklch(0.30 0.12 258); /* Navy sidebar */
   --sidebar-foreground: oklch(1 0 0);
   --sidebar-primary: oklch(0.70 0.12 230); /* Light blue primary on navy */
@@ -204,24 +203,6 @@
   html {
     scroll-behavior: smooth;
   }
-
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--muted);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border: 2px solid var(--muted);
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary);
-  }
 }
 
 /* Neo-Brutalist Utility Classes */
@@ -280,7 +261,7 @@
     border-color: var(--border);
   }
 
-  /* Berkeley Prep brand colors */
+  /* BPS brand colors */
   .bg-berkeley-navy {
     background-color: oklch(0.30 0.12 258);
   }

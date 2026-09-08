@@ -23,7 +23,7 @@ function ensureVapidInitialized() {
 
   if (vapidPublicKey && vapidPrivateKey) {
     webpush.setVapidDetails(
-      'mailto:notifications@BerkConnect.app',
+      'mailto:notifications@thecompass.app',
       vapidPublicKey,
       vapidPrivateKey
     )
