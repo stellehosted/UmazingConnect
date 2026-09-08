@@ -80,60 +80,61 @@ export function Navigation({ activeSection, onSectionChange, user, onLogout }: N
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b-2 border-foreground">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* Logo and brand */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Logo className="h-8 w-8 sm:h-9 sm:w-9" />
-            <div>
-              <span className="text-base sm:text-xl font-black text-foreground tracking-tight">
-                The<span className="text-secondary"> Compass</span>
-              </span>
+    <>
+      {/* Desktop top bar */}
+      <nav className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background border-b-2 border-foreground">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo and brand */}
+            <div className="flex items-center gap-3">
+              <Logo className="h-9 w-9" />
+              <div>
+                <span className="text-xl font-black text-foreground tracking-tight">
+                  The<span className="text-secondary"> Compass</span>
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Navigation items - Desktop only */}
-          <div className="hidden md:flex items-center gap-2">
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const isActive = activeSection === item.id
+            {/* Navigation items */}
+            <div className="flex items-center gap-2">
+              {navItems.map((item) => {
+                const Icon = item.icon
+                const isActive = activeSection === item.id
 
-              return (
-                <Button
-                  key={item.id}
-                  variant={isActive ? "default" : "outline"}
-                  className={`gap-2 ${isActive ? "" : "bg-background"}`}
-                  onClick={() => onSectionChange(item.id)}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
+                return (
+                  <Button
+                    key={item.id}
+                    variant={isActive ? "default" : "outline"}
+                    className={`gap-2 ${isActive ? "" : "bg-background"}`}
+                    onClick={() => onSectionChange(item.id)}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Button>
+                )
+              })}
+            </div>
+
+            {/* Right side actions */}
+            <div className="flex items-center gap-3">
+              {/* Notifications */}
+              <Link href="/notifications">
+                <Button variant="outline" size="icon" className="relative h-10 w-10 bg-background">
+                  <Bell className="h-5 w-5" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-secondary border-2 border-foreground flex items-center justify-center text-[8px] font-bold text-secondary-foreground">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
                 </Button>
-              )
-            })}
-          </div>
+              </Link>
 
-          {/* Right side actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Notifications */}
-            <Link href="/notifications">
-              <Button variant="outline" size="icon" className="relative hidden xs:flex h-9 w-9 sm:h-10 sm:w-10 bg-background">
-                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-                {notificationCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 sm:h-4 sm:w-4 bg-secondary border-2 border-foreground flex items-center justify-center text-[8px] font-bold text-secondary-foreground">
-                    {notificationCount > 9 ? '9+' : notificationCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
-            {/* User menu - Desktop */}
-            {user ? (
-              <>
+              {/* User menu */}
+              {user ? (
                 <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 sm:h-11 sm:w-11 p-0 hidden md:flex items-center justify-center bg-primary text-primary-foreground border-2 border-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all">
-                      <User className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <Button variant="ghost" className="relative h-11 w-11 p-0 flex items-center justify-center bg-primary text-primary-foreground border-2 border-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal transition-all">
+                      <User className="h-6 w-6" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 border-2 border-foreground shadow-brutal" align="end" forceMount>
@@ -175,106 +176,110 @@ export function Navigation({ activeSection, onSectionChange, user, onLogout }: N
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-
-                {/* Settings Dialog */}
-                {settingsOpen && (
-                  <UserSettingsDialog
-                    open={settingsOpen}
-                    onOpenChange={setSettingsOpen}
-                    user={user}
-                    isTeacher={isTeacher}
-                  />
-                )}
-              </>
-            ) : (
-              // Show placeholder when no user (during loading or not authenticated)
-              <div className="h-10 w-10 sm:h-11 sm:w-11 bg-muted border-2 border-foreground animate-pulse hidden md:block" />
-            )}
-
-            {/* Mobile navigation menu */}
-            <div className="md:hidden">
-              <DropdownMenu open={mobileDropdownOpen} onOpenChange={setMobileDropdownOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9 bg-background">
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 border-2 border-foreground shadow-brutal" align="end">
-                  {/* User info on mobile */}
-                  {user && (
-                    <>
-                      <div className="flex items-center gap-3 p-3 bg-secondary/10 border-b-2 border-foreground -m-1 mb-1">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center bg-primary text-primary-foreground border-2 border-foreground">
-                          <User className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold leading-none truncate uppercase">{user.name || "User"}</p>
-                          <p className="text-xs leading-none text-muted-foreground mt-1 truncate">{user.email}</p>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Navigation items */}
-                  {navItems.map((item) => {
-                    const Icon = item.icon
-                    return (
-                      <DropdownMenuItem
-                        key={item.id}
-                        onClick={() => onSectionChange(item.id)}
-                        className={`font-bold uppercase text-xs tracking-wide cursor-pointer ${activeSection === item.id ? "bg-secondary text-secondary-foreground" : ""}`}
-                      >
-                        <Icon className="mr-2 h-4 w-4" />
-                        <span>{item.label}</span>
-                      </DropdownMenuItem>
-                    )
-                  })}
-
-                  <DropdownMenuSeparator className="bg-foreground/20" />
-
-                  {/* Mobile-only menu items */}
-                  <Link href="/notifications">
-                    <DropdownMenuItem className="font-bold uppercase text-xs tracking-wide cursor-pointer">
-                      <Bell className="mr-2 h-4 w-4" />
-                      <span>Notifications</span>
-                      {notificationCount > 0 && (
-                        <span className="ml-auto px-1.5 py-0.5 bg-secondary text-secondary-foreground text-[10px] font-bold border border-foreground">
-                          {notificationCount > 9 ? '9+' : notificationCount}
-                        </span>
-                      )}
-                    </DropdownMenuItem>
-                  </Link>
-
-                  <DropdownMenuItem
-                    className="font-bold uppercase text-xs tracking-wide cursor-pointer"
-                    onSelect={(e) => {
-                      e.preventDefault()
-                      handleOpenSettings()
-                    }}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-
-                  <Link href="/faq">
-                    <DropdownMenuItem className="font-bold uppercase text-xs tracking-wide cursor-pointer">
-                      <HelpCircle className="mr-2 h-4 w-4" />
-                      <span>FAQ & Support</span>
-                    </DropdownMenuItem>
-                  </Link>
-
-                  <DropdownMenuSeparator className="bg-foreground/20" />
-
-                  <DropdownMenuItem onClick={onLogout} className="font-bold uppercase text-xs tracking-wide cursor-pointer text-destructive focus:text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              ) : (
+                // Show placeholder when no user (during loading or not authenticated)
+                <div className="h-11 w-11 bg-muted border-2 border-foreground animate-pulse" />
+              )}
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile bottom tab bar — sits above the home indicator / Safari chrome */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 border-foreground pb-[env(safe-area-inset-bottom)]">
+        <div className="grid grid-cols-4 h-14">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const isActive = activeSection === item.id
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => onSectionChange(item.id)}
+                className={`flex flex-col items-center justify-center gap-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                  isActive ? "text-secondary" : "text-muted-foreground"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                {item.label}
+              </button>
+            )
+          })}
+
+          <Link
+            href="/notifications"
+            className="flex flex-col items-center justify-center gap-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground"
+          >
+            <span className="relative">
+              <Bell className="h-5 w-5" />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-2 h-3.5 w-3.5 rounded-full bg-secondary border-2 border-foreground flex items-center justify-center text-[8px] font-bold text-secondary-foreground">
+                  {notificationCount > 9 ? '9+' : notificationCount}
+                </span>
+              )}
+            </span>
+            Alerts
+          </Link>
+
+          <DropdownMenu open={mobileDropdownOpen} onOpenChange={setMobileDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <button className="flex flex-col items-center justify-center gap-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                <Menu className="h-5 w-5" />
+                More
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="end" className="w-56 border-2 border-foreground shadow-brutal mb-2">
+              {/* User info */}
+              {user && (
+                <div className="flex items-center gap-3 p-3 bg-secondary/10 border-b-2 border-foreground -m-1 mb-1">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center bg-primary text-primary-foreground border-2 border-foreground">
+                    <User className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold leading-none truncate uppercase">{user.name || "User"}</p>
+                    <p className="text-xs leading-none text-muted-foreground mt-1 truncate">{user.email}</p>
+                  </div>
+                </div>
+              )}
+
+              <DropdownMenuItem
+                className="font-bold uppercase text-xs tracking-wide cursor-pointer"
+                onSelect={(e) => {
+                  e.preventDefault()
+                  handleOpenSettings()
+                }}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+
+              <Link href="/faq">
+                <DropdownMenuItem className="font-bold uppercase text-xs tracking-wide cursor-pointer">
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  <span>FAQ & Support</span>
+                </DropdownMenuItem>
+              </Link>
+
+              <DropdownMenuSeparator className="bg-foreground/20" />
+
+              <DropdownMenuItem onClick={onLogout} className="font-bold uppercase text-xs tracking-wide cursor-pointer text-destructive focus:text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </nav>
+
+      {/* Settings Dialog */}
+      {user && settingsOpen && (
+        <UserSettingsDialog
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          user={user}
+          isTeacher={isTeacher}
+        />
+      )}
+    </>
   )
 }
