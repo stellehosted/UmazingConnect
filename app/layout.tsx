@@ -6,9 +6,10 @@ import './globals.css'
 import { AuthProvider } from '@/contexts/auth-context'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ServiceWorkerRegister } from '@/components/service-worker-register'
+import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
-  title: 'The Compass',
+  title: 'BPS Compass',
   description:
     'Connect with your school community. Share updates, join clubs, and stay informed about campus life.',
   generator: 'v0.app',
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'The Compass',
+    title: 'BPS Compass',
   },
   icons: {
     icon: '/icon-192.png',
@@ -55,6 +56,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>{children}</AuthProvider>
+          <Toaster />
         </ThemeProvider>
         <Analytics />
       </body>

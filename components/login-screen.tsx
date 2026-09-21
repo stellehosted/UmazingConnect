@@ -5,6 +5,7 @@ import localFont from "next/font/local"
 import { RefreshCw } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { CompassHero } from "@/components/compass-hero"
+import { useToast } from "@/hooks/use-toast"
 
 const berkeley = localFont({
   src: "../fonts/BerkeleyStd-Black.otf",
@@ -19,12 +20,12 @@ const AVENIR = 'Avenir, "Avenir Next", "Nunito Sans", system-ui, sans-serif'
 const BG = "#011321"
 
 // Every position, size and type spec below is taken from the "Landing" frame
-// in The Compass.sketch, which is designed on a 1920x1080 canvas. Converting
+// in BPS Compass.sketch, which is designed on a 1920x1080 canvas. Converting
 // to cqw locks the whole layout to the design's proportions at any width.
 const STAGE_W = 1920
 const pct = (v: number) => `${(v / STAGE_W) * 100}cqw`
 
-// The stage always covers the viewport, pinned bottom-right, so the compass
+// The stage always covers the viewport, pinned bottom-right, so BPS Compass
 // bleeds off the real window edges instead of being clipped at an inset
 // boundary, and the content column is never cropped.
 const stageStyle: CSSProperties = {
@@ -151,6 +152,7 @@ const portraitFooterStyle: CSSProperties = {
 export function LoginScreen() {
   const { login, isLoading } = useAuth()
   const [showReset, setShowReset] = useState(false)
+  const { toast } = useToast()
 
   // iOS Safari tints its chrome from the document background and theme-colour,
   // not from this screen's own container, so a full-bleed splash otherwise
@@ -193,7 +195,11 @@ export function LoginScreen() {
           error?.errorCode === 'interaction_in_progress') {
         setShowReset(true)
       } else {
-        alert("Login failed. Please try again.")
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: "Please try again.",
+        })
       }
     }
   }
@@ -225,7 +231,7 @@ export function LoginScreen() {
         </div>
 
         <h1 className={berkeley.className} style={titleStyle}>
-          The Compass
+          BPS Compass
         </h1>
 
         <button
@@ -273,7 +279,7 @@ export function LoginScreen() {
 
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 pb-28 text-center">
           <h1 className={berkeley.className} style={portraitTitleStyle}>
-            The Compass
+            BPS Compass
           </h1>
 
           <button
