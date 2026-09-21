@@ -1,6 +1,6 @@
 {
-  "name": "The Compass",
-  "short_name": "The Compass",
+  "name": "BPS Compass",
+  "short_name": "BPS Compass",
   "description": "Connect with your school community. Share updates, join clubs, and stay informed about campus life.",
   "start_url": "/",
   "scope": "/",

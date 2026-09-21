@@ -1,4 +1,4 @@
-// Artwork exported directly from "The Compass.svg" (Logo M2), the static
+// Artwork exported directly from "BPS Compass.svg" (Logo M2), the static
 // mark used anywhere the animated CompassHero dial is too heavy — nav bars,
 // favicons-in-JSX, small badges.
 
@@ -8,7 +8,7 @@ export function Logo({ className }: { className?: string }) {
       viewBox="150 150 1748 1748"
       className={className}
       role="img"
-      aria-label="The Compass logo"
+      aria-label="BPS Compass logo"
     >
       <g fill="none">
         <circle fill="#57a0d2" cx="1024" cy="1206.38" r="615.8" />

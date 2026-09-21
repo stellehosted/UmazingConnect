@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 
-// Artwork exported directly from the "Logo" group in The Compass.sketch.
+// Artwork exported directly from the "Logo" group in BPS Compass.sketch.
 // The viewBox matches that group's own 2380x2380 bounding box, so one SVG
 // unit equals one unit of the 1920x1080 landing frame it's placed on.
 //
@@ -57,7 +57,7 @@ export function CompassHero({
       if (!svg) return
 
       // The dial's centre is a fixed fraction of the artwork box, so it can be
-      // located on screen no matter how the compass is cropped or scaled.
+      // located on screen no matter how BPS Compass is cropped or scaled.
       const rect = svg.getBoundingClientRect()
       const centerX = rect.left + (DIAL_CX / VIEWBOX) * rect.width
       const centerY = rect.top + (DIAL_CY / VIEWBOX) * rect.height
@@ -94,7 +94,7 @@ export function CompassHero({
       viewBox="0 0 2380 2380"
       className={className}
       role="img"
-      aria-label="The Compass logo"
+      aria-label="BPS Compass logo"
     >
       <g fill="none" fillRule="evenodd">
         <circle fill="#57A0D2" cx="1190" cy="1427.09355" r="801.297656" />

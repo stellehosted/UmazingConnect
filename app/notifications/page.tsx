@@ -662,7 +662,7 @@ function getPushErrorMessage(reason: PushFailureReason, error?: unknown): string
       // Terminal state: the browser will not prompt again, so the message has
       // to be a set of instructions rather than an invitation to retry.
       return isAndroid
-        ? 'Notifications are blocked for this site. Open your browser menu, then Site settings > Notifications, and allow them for The Compass.'
+        ? 'Notifications are blocked for this site. Open your browser menu, then Site settings > Notifications, and allow them for BPS Compass.'
         : 'Notifications are blocked for this site. Allow them in your browser or device settings, then try again.'
 
     case 'failed': {

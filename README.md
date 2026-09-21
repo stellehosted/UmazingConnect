@@ -1,4 +1,4 @@
-# The Compass
+# BPS Compass
 
 A modern, simple club-organizing app for BPS: students can push updates, create club pages, manage leadership, and more...
 

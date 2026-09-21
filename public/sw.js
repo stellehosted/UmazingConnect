@@ -1,4 +1,4 @@
-// Service Worker for The Compass Push Notifications
+// Service Worker for BPS Compass Push Notifications
 
 const CACHE_NAME = 'schoolconnect-v1'
 
@@ -29,8 +29,8 @@ self.addEventListener('push', (event) => {
 
   // Default notification data - always have a fallback
   let data = {
-    title: 'The Compass',
-    body: 'New notification from The Compass',
+    title: 'BPS Compass',
+    body: 'New notification from BPS Compass',
     url: '/',
   }
 

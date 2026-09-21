@@ -1,4 +1,4 @@
--- Performance Optimization Indexes for The Compass
+-- Performance Optimization Indexes for BPS Compass
 -- Run this to improve query performance
 
 -- ============================================

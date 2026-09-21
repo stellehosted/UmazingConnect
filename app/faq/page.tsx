@@ -74,7 +74,7 @@ export default function FaqPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">FAQ & Support</h1>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Answers to common questions about The Compass
+            Answers to common questions about BPS Compass
           </p>
         </div>
       </div>
@@ -84,13 +84,13 @@ export default function FaqPage() {
         <FaqItem
           icon={<Bell className="h-5 w-5" />}
           question="How do I enable notifications?"
-          answer="When you first visit the app, you'll be prompted to allow notifications. If you dismissed the prompt, go to your browser settings, find this site under 'Notifications', and set it to 'Allow'. On iOS, you must first add the app to your home screen (see below), then enable notifications from Settings > Notifications > The Compass."
+          answer="When you first visit the app, you'll be prompted to allow notifications. If you dismissed the prompt, go to your browser settings, find this site under 'Notifications', and set it to 'Allow'. On iOS, you must first add the app to your home screen (see below), then enable notifications from Settings > Notifications > BPS Compass."
         />
 
         <FaqItem
           icon={<Smartphone className="h-5 w-5" />}
           question="How do I add this app to my home screen on iPhone or iPad?"
-          answer="Open The Compass in Safari, tap the Share button (the square with an arrow pointing up) at the bottom of the screen, scroll down and tap 'Add to Home Screen', then tap 'Add'. The app will appear on your home screen like a regular app and open in full screen."
+          answer="Open BPS Compass in Safari, tap the Share button (the square with an arrow pointing up) at the bottom of the screen, scroll down and tap 'Add to Home Screen', then tap 'Add'. The app will appear on your home screen like a regular app and open in full screen."
         />
 
         <FaqItem
@@ -102,7 +102,7 @@ export default function FaqPage() {
         <FaqItem
           icon={<Search className="h-5 w-5" />}
           question="I can't find my club on this app. How do I add it?"
-          answer="Only administrators can create new clubs on The Compass. Please email sunste@berkeleyprep.org with your club's name, a short description, its category (Academic, Arts, Sports, Technology, Service, or Hobby), and meeting details. An admin will add it for you."
+          answer="Only administrators can create new clubs on BPS Compass. Please email sunste@berkeleyprep.org with your club's name, a short description, its category (Academic, Arts, Sports, Technology, Service, or Hobby), and meeting details. An admin will add it for you."
         />
 
         <FaqItem
