@@ -5,27 +5,27 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-bold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px] uppercase tracking-wide",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-avenir font-bold tracking-wide transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground border-2 border-foreground shadow-brutal hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-brutal-sm",
+          "bg-[var(--button-default)] text-white hover:brightness-110 active:brightness-95",
         destructive:
-          "bg-destructive text-white border-2 border-foreground shadow-brutal hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-brutal-sm",
+          "bg-[var(--button-destructive)] text-white hover:brightness-110 active:brightness-95",
         outline:
-          "border-2 border-foreground bg-background hover:bg-secondary hover:text-secondary-foreground shadow-brutal-sm hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal active:translate-x-0 active:translate-y-0 active:shadow-none",
+          "bg-[var(--button-outline)] text-black hover:brightness-95 active:brightness-90",
         secondary:
-          "bg-secondary text-secondary-foreground border-2 border-foreground shadow-brutal hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-brutal-lg active:translate-x-0 active:translate-y-0 active:shadow-brutal-sm",
+          "bg-[var(--button-secondary)] text-black hover:brightness-105 active:brightness-95",
         ghost:
-          "hover:bg-secondary/20 hover:text-foreground border-2 border-transparent hover:border-foreground",
-        link: "text-primary underline-offset-4 hover:underline font-bold",
+          "hover:bg-secondary/20 hover:text-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-5 py-2",
-        sm: "h-8 gap-1.5 px-4 text-xs",
-        lg: "h-12 px-8 text-base",
-        icon: "size-10",
+        default: "h-12 px-6 py-2 text-xl",
+        sm: "h-10 gap-1.5 px-4 text-sm",
+        lg: "h-14 px-8 text-2xl",
+        icon: "size-12",
       },
     },
     defaultVariants: {

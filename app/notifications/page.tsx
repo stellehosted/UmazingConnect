@@ -351,7 +351,7 @@ export default function NotificationsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b-2 border-foreground pb-2">
+      <div className="flex gap-2 border-b border-border pb-2">
         <Button
           variant={activeTab === 'notifications' ? 'default' : 'outline'}
           onClick={() => setActiveTab('notifications')}
@@ -575,7 +575,7 @@ export default function NotificationsPage() {
                 disabled={savingPrefs}
                 className="space-y-4"
               >
-                <div className="flex items-start space-x-3 p-3 rounded-lg border-2 border-foreground hover:bg-muted/50 transition-colors">
+                <div className="flex items-start space-x-3 p-3 rounded-lg ring-1 ring-border/50 hover:bg-muted/50 transition-colors">
                   <RadioGroupItem value="my_clubs" id="my_clubs" className="mt-1" />
                   <div className="flex-1">
                     <Label htmlFor="my_clubs" className="flex items-center gap-2 cursor-pointer">
@@ -588,7 +588,7 @@ export default function NotificationsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 rounded-lg border-2 border-foreground hover:bg-muted/50 transition-colors">
+                <div className="flex items-start space-x-3 p-3 rounded-lg ring-1 ring-border/50 hover:bg-muted/50 transition-colors">
                   <RadioGroupItem value="all" id="all" className="mt-1" />
                   <div className="flex-1">
                     <Label htmlFor="all" className="flex items-center gap-2 cursor-pointer">

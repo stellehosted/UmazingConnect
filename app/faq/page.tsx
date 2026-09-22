@@ -30,7 +30,7 @@ function FaqItem({ question, answer, icon }: FaqItemProps) {
 
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-md border-2 border-foreground/10"
+      className="cursor-pointer transition-all hover:shadow-md"
       onClick={() => setOpen(!open)}
     >
       <CardContent className="p-4">

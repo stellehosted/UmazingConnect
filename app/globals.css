@@ -4,33 +4,36 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Navy: #003262, Light Blue: #5DADE2, White */
+  /* Berkeley Blue */
+  --navy: #00447c;
+  --carolina-blue: #56a0d3;
+  --destructive-red: #f45e52;
 
-  --background: oklch(0.98 0.01 230); /* Cool off-white */
-  --foreground: oklch(0.15 0.03 258); /* Deep navy-black */
+  --background: #f1f8fb;
+  --foreground: #000000;
 
-  --card: oklch(1 0 0); /* Pure white cards */
-  --card-foreground: oklch(0.15 0.03 258);
+  --card: #ffffff;
+  --card-foreground: #000000;
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.03 258);
+  --popover: #ffffff;
+  --popover-foreground: #000000;
 
   /* Navy Primary */
-  --primary: #00447c; /* Deep Navy #003262 */
-  --primary-foreground: oklch(1 0 0);
+  --primary: var(--navy);
+  --primary-foreground: #ffffff;
 
-  /* Light Blue Secondary */
-  --secondary: oklch(74.8% 0.11 239.45); /* Light Blue */
-  --secondary-foreground: oklch(0.15 0.03 258);
+  /* Carolina Blue Secondary */
+  --secondary: var(--carolina-blue);
+  --secondary-foreground: #000000;
 
   --muted: oklch(0.94 0.01 230); /* Cool gray */
   --muted-foreground: oklch(0.45 0.02 258);
 
   /* Light blue accent for highlights */
   --accent: oklch(0.70 0.12 230); /* Light Blue */
-  --accent-foreground: oklch(0.15 0.03 258);
+  --accent-foreground: #000000;
 
-  --destructive: oklch(0.55 0.22 25);
+  --destructive: var(--destructive-red);
   --destructive-foreground: oklch(1 0 0);
 
   /* Neo-brutalist thick borders */
@@ -45,13 +48,17 @@
   --chart-4: oklch(0.60 0.10 230); /* Softer blue */
   --chart-5: oklch(0.40 0.10 258);
 
-  /* Neo-brutalist design tokens */
-  --radius: 0.25rem; /* Sharper corners for brutalist look */
-  --shadow-brutal: 4px 4px 0px 0px oklch(0.15 0.03 258); /* Hard offset shadow */
-  --shadow-brutal-sm: 2px 2px 0px 0px oklch(0.15 0.03 258);
-  --shadow-brutal-lg: 6px 6px 0px 0px oklch(0.15 0.03 258);
-  --shadow-brutal-accent: 4px 4px 0px 0px oklch(0.70 0.12 230);
-  --border-width: 2px;
+  /* Soft design tokens */
+  --radius: 1.5rem; /* Soft rounded corners */
+
+  /* Button fills — flat colors from the Sketch button asset export (v2: no
+     gradient, no shadow). Default/destructive/secondary reuse the brand
+     tokens above; outline is its own neutral gray with no existing
+     semantic equivalent. */
+  --button-default: var(--navy);
+  --button-destructive: var(--destructive-red);
+  --button-outline: #d9d9d9;
+  --button-secondary: var(--carolina-blue);
 
   /* Sidebar with BPS colors */
   --sidebar: oklch(0.30 0.12 258); /* Navy sidebar */
@@ -101,15 +108,6 @@
   --chart-4: oklch(0.50 0.10 260);
   --chart-5: oklch(0.70 0.06 220);
 
-  /* Sleek shadows - soft glows instead of hard offsets */
-  --shadow-brutal: 0 4px 20px -4px oklch(0 0 0 / 0.4);
-  --shadow-brutal-sm: 0 2px 10px -2px oklch(0 0 0 / 0.3);
-  --shadow-brutal-lg: 0 8px 30px -6px oklch(0 0 0 / 0.5);
-  --shadow-brutal-accent: 0 4px 20px -4px oklch(0.65 0.13 230 / 0.25);
-
-  /* Refined radius for dark mode - smoother corners */
-  --radius: 0.5rem;
-
   --sidebar: oklch(0.11 0.015 260);
   --sidebar-foreground: oklch(0.93 0.005 260);
   --sidebar-primary: oklch(0.65 0.13 230);
@@ -121,7 +119,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-avenir: Avenir, "Avenir Next", "Nunito Sans", system-ui, sans-serif;
+  --font-sans: var(--font-avenir);
   --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -205,62 +204,7 @@
   }
 }
 
-/* Neo-Brutalist Utility Classes */
 @layer utilities {
-  /* Hard shadow utilities */
-  .shadow-brutal {
-    box-shadow: var(--shadow-brutal);
-  }
-
-  .shadow-brutal-sm {
-    box-shadow: var(--shadow-brutal-sm);
-  }
-
-  .shadow-brutal-lg {
-    box-shadow: var(--shadow-brutal-lg);
-  }
-
-  .shadow-brutal-accent {
-    box-shadow: var(--shadow-brutal-accent);
-  }
-
-  /* Hover lift effect */
-  .hover-brutal {
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
-  }
-
-  .hover-brutal:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0px 0px oklch(0.15 0.03 258);
-  }
-
-  .hover-brutal:active {
-    transform: translate(0px, 0px);
-    box-shadow: 2px 2px 0px 0px oklch(0.15 0.03 258);
-  }
-
-  /* Dark mode: sleek hover with soft glow instead of hard shadow */
-  .dark .hover-brutal:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px -5px oklch(0 0 0 / 0.4);
-  }
-
-  .dark .hover-brutal:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px -2px oklch(0 0 0 / 0.3);
-  }
-
-  /* Thick border utility */
-  .border-brutal {
-    border-width: 2px;
-    border-color: var(--border);
-  }
-
-  .border-brutal-3 {
-    border-width: 3px;
-    border-color: var(--border);
-  }
-
   /* BPS brand colors */
   .bg-berkeley-navy {
     background-color: oklch(0.30 0.12 258);
@@ -294,20 +238,6 @@
     font-weight: 800;
     letter-spacing: -0.02em;
     text-transform: uppercase;
-  }
-
-  /* Sticker/tag style */
-  .tag-brutal {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border: 2px solid currentColor;
-    background: var(--secondary);
-    color: var(--secondary-foreground);
-    transform: rotate(-2deg);
   }
 
   /* Underline accent */

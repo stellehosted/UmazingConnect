@@ -70,10 +70,10 @@ const categoryIcons = {
 
 const categoryColors = {
   academic: "bg-primary text-primary-foreground",
-  arts: "bg-purple-600 text-white border-foreground",
-  sports: "bg-green-600 text-white border-foreground",
-  technology: "bg-orange-500 text-white border-foreground",
-  service: "bg-red-600 text-white border-foreground",
+  arts: "bg-purple-600 text-white",
+  sports: "bg-green-600 text-white",
+  technology: "bg-orange-500 text-white",
+  service: "bg-red-600 text-white",
   hobby: "bg-secondary text-secondary-foreground",
 }
 
@@ -239,7 +239,7 @@ export function ClubsContent() {
     return (
       <Card
         key={club.id}
-        className="overflow-hidden cursor-pointer group hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all animate-pop-in"
+        className="overflow-hidden cursor-pointer group transition-all animate-pop-in"
         style={{
           animationDelay: `${index * 50}ms`,
           transform: index % 3 === 0 ? 'rotate(-0.5deg)' : index % 3 === 1 ? 'rotate(0.3deg)' : 'rotate(-0.2deg)'
@@ -254,28 +254,28 @@ export function ClubsContent() {
           }
         }}
       >
-        <div className="aspect-video relative overflow-hidden border-b-2 border-foreground">
+        <div className="aspect-video relative overflow-hidden">
           <img
             src={club.image_url || "/placeholder.svg"}
             alt={club.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
-            <Badge className={`${categoryColors[club.category]} text-xs border-2`}>
+            <Badge className={`${categoryColors[club.category]} text-xs`}>
               <CategoryIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-              <span className="hidden xs:inline uppercase">{club.category}</span>
+              <span className="hidden xs:inline capitalize">{club.category}</span>
             </Badge>
           </div>
           {!club.is_claimed && (
             <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
-              <Badge variant="secondary" className="text-xs border-2 border-foreground transform rotate-2">
+              <Badge variant="secondary" className="text-xs transform rotate-2">
                 Unclaimed
               </Badge>
             </div>
           )}
           {showLeadershipBadge && isLeader && (
             <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
-              <Badge className="bg-primary text-primary-foreground text-xs border-2 border-foreground">
+              <Badge className="bg-primary text-primary-foreground text-xs">
                 <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                 {club.memberRole === 'president' ? 'President' : club.memberRole === 'vice_president' ? 'VP' : 'Officer'}
               </Badge>
@@ -320,7 +320,7 @@ export function ClubsContent() {
           )}
 
           {club.is_claimed && club.president_name && (
-            <div className="flex items-center gap-2 min-w-0 p-2 bg-muted/50 border border-foreground/20">
+            <div className="flex items-center gap-2 min-w-0 p-2 rounded-md bg-muted/50">
               <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1 truncate font-medium">
                 <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0 text-secondary" />
                 <span className="truncate">{club.president_name}</span>
@@ -343,7 +343,7 @@ export function ClubsContent() {
             </div>
           )}
 
-          <div className="flex flex-col gap-2 pt-2 border-t-2 border-foreground/20">
+          <div className="flex flex-col gap-2 pt-2 border-t border-border">
             {/* Sponsor Claim Button — shown for verified teachers who haven't
                 already sponsored this specific club. Multiple teachers can
                 sponsor the same club; is_sponsor is per-user from /api/clubs. */}
@@ -433,16 +433,16 @@ export function ClubsContent() {
                             <Crown className="h-4 w-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="border-2 border-foreground shadow-brutal">
+                        <DialogContent>
                           <DialogHeader>
-                            <DialogTitle className="uppercase font-bold">Transfer Presidency</DialogTitle>
+                            <DialogTitle className="font-bold">Transfer Presidency</DialogTitle>
                             <DialogDescription>
                               Transfer club presidency to another member by their user ID
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4">
                             <div className="space-y-2">
-                              <Label htmlFor="transfer-user-id" className="font-bold uppercase text-xs">User ID</Label>
+                              <Label htmlFor="transfer-user-id" className="font-bold text-xs">User ID</Label>
                               <Input
                                 id="transfer-user-id"
                                 placeholder="Enter user ID to transfer to"
@@ -483,10 +483,10 @@ export function ClubsContent() {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="inline-block p-4 bg-secondary border-2 border-foreground shadow-brutal mb-4 animate-bounce-brutal">
+          <div className="inline-block p-4 rounded-full bg-secondary mb-4 animate-bounce-brutal">
             <Loader2 className="h-10 w-10 animate-spin text-secondary-foreground" />
           </div>
-          <p className="text-muted-foreground font-bold uppercase tracking-wide">Loading clubs...</p>
+          <p className="text-muted-foreground font-bold tracking-wide">Loading clubs...</p>
         </div>
       </div>
     )
@@ -496,11 +496,11 @@ export function ClubsContent() {
     <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground border-2 border-foreground shadow-brutal transform rotate-1">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground transform rotate-1">
           <Grid3X3 className="h-5 w-5" />
-          <span className="font-bold uppercase tracking-wide text-sm">Browse & Join</span>
+          <span className="font-bold tracking-wide text-sm">Browse & Join</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight uppercase">
+        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
           School Clubs
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground font-medium max-w-2xl mx-auto">
@@ -529,22 +529,22 @@ export function ClubsContent() {
       )}
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-auto bg-muted border-2 border-foreground p-1">
+        <TabsList className="grid w-full grid-cols-3 h-auto bg-muted p-1">
           <TabsTrigger
             value="all"
-            className="text-xs sm:text-sm py-2 font-bold uppercase tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-brutal-sm"
+            className="text-xs sm:text-sm py-2 font-bold tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
           >
             All Clubs
           </TabsTrigger>
           <TabsTrigger
             value="my-clubs"
-            className="text-xs sm:text-sm py-2 font-bold uppercase tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-brutal-sm"
+            className="text-xs sm:text-sm py-2 font-bold tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
           >
             My Clubs
           </TabsTrigger>
           <TabsTrigger
             value="unclaimed"
-            className="text-xs sm:text-sm py-2 font-bold uppercase tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-brutal-sm"
+            className="text-xs sm:text-sm py-2 font-bold tracking-wide data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
           >
             Unclaimed
           </TabsTrigger>
@@ -562,10 +562,10 @@ export function ClubsContent() {
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-48 border-2 border-foreground font-bold">
+              <SelectTrigger className="w-full sm:w-48 font-bold">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border-2 border-foreground shadow-brutal">
+              <SelectContent>
                 {categories.map((category) => (
                   <SelectItem key={category.value} value={category.value} className="font-medium">
                     {category.label}
@@ -575,7 +575,7 @@ export function ClubsContent() {
             </Select>
           </div>
 
-          <div className="inline-block px-3 py-1 bg-muted border-2 border-foreground/30 text-xs sm:text-sm text-muted-foreground font-bold uppercase">
+          <div className="inline-block px-3 py-1 rounded-full bg-muted text-xs sm:text-sm text-muted-foreground font-bold">
             Showing {filteredClubs.length} clubs
           </div>
 
@@ -584,12 +584,12 @@ export function ClubsContent() {
           </div>
 
           {filteredClubs.length === 0 && (
-            <Card className="hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all">
+            <Card className="transition-all">
               <CardContent className="py-12 sm:py-16 text-center">
-                <div className="inline-block p-4 bg-muted border-2 border-foreground mb-4">
+                <div className="inline-block p-4 rounded-full bg-muted mb-4">
                   <Search className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground" />
                 </div>
-                <p className="text-lg sm:text-xl text-foreground font-bold uppercase">No clubs found</p>
+                <p className="text-lg sm:text-xl text-foreground font-bold">No clubs found</p>
                 <p className="text-sm text-muted-foreground mt-2 font-medium">
                   Try adjusting your search or filters
                 </p>
@@ -599,19 +599,19 @@ export function ClubsContent() {
         </TabsContent>
 
         <TabsContent value="my-clubs" className="space-y-4 sm:space-y-6 mt-6">
-          <div className="inline-block px-3 py-1 bg-muted border-2 border-foreground/30 text-xs sm:text-sm text-muted-foreground font-bold uppercase">
+          <div className="inline-block px-3 py-1 rounded-full bg-muted text-xs sm:text-sm text-muted-foreground font-bold">
             {joinedClubs.length} joined clubs
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {joinedClubs.map((club, index) => renderClubCard(club, true, index))}
           </div>
           {joinedClubs.length === 0 && (
-            <Card className="hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all">
+            <Card className="transition-all">
               <CardContent className="py-12 sm:py-16 text-center">
-                <div className="inline-block p-4 bg-muted border-2 border-foreground mb-4">
+                <div className="inline-block p-4 rounded-full bg-muted mb-4">
                   <Users className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground" />
                 </div>
-                <p className="text-lg sm:text-xl text-foreground font-bold uppercase">No clubs joined yet</p>
+                <p className="text-lg sm:text-xl text-foreground font-bold">No clubs joined yet</p>
                 <p className="text-sm text-muted-foreground mt-2 font-medium">
                   Browse all clubs and join one!
                 </p>
@@ -621,19 +621,19 @@ export function ClubsContent() {
         </TabsContent>
 
         <TabsContent value="unclaimed" className="space-y-4 sm:space-y-6 mt-6">
-          <div className="inline-block px-3 py-1 bg-secondary border-2 border-foreground text-xs sm:text-sm text-secondary-foreground font-bold uppercase transform -rotate-1">
+          <div className="inline-block px-3 py-1 rounded-full bg-secondary text-xs sm:text-sm text-secondary-foreground font-bold transform -rotate-1">
             {unclaimedClubs.length} unclaimed clubs available
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {unclaimedClubs.map((club, index) => renderClubCard(club, false, index))}
           </div>
           {unclaimedClubs.length === 0 && (
-            <Card className="hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all">
+            <Card className="transition-all">
               <CardContent className="py-12 sm:py-16 text-center">
-                <div className="inline-block p-4 bg-secondary border-2 border-foreground mb-4">
+                <div className="inline-block p-4 rounded-full bg-secondary mb-4">
                   <Crown className="h-10 w-10 sm:h-12 sm:w-12 text-secondary-foreground" />
                 </div>
-                <p className="text-lg sm:text-xl text-foreground font-bold uppercase">All clubs claimed!</p>
+                <p className="text-lg sm:text-xl text-foreground font-bold">All clubs claimed!</p>
                 <p className="text-sm text-muted-foreground mt-2 font-medium">
                   Every club has a president now
                 </p>

@@ -7,6 +7,7 @@ import { DEMO_MODE, DEMO_USER } from "@/lib/demo-mode"
 import { debugMSAL } from "@/lib/debug-msal"
 import { setupCryptoPolyfill, isSecureContext, getSecurityWarning } from "@/lib/crypto-polyfill"
 import { autoFixStuckInteraction } from "@/lib/clear-msal-cache"
+import { formatDisplayName } from "@/lib/utils"
 // Removed server-side imports to prevent bundling issues
 
 interface AuthContextType {
@@ -200,7 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
 
           // Atomic authentication and registration: immediately upsert user to database
-          await upsertUserToDatabase(userInfo.email, userInfo.displayName || userInfo.name || "", userInfo.picture)
+          await upsertUserToDatabase(userInfo.email, formatDisplayName(userInfo.displayName || userInfo.name || ""), userInfo.picture)
 
           // Retrieve user profile and teacher status in parallel — zero extra latency.
           const [databaseUser, teacherData] = await Promise.all([
@@ -234,7 +235,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             try {
               // Atomic authentication and registration with fallback data
-              await upsertUserToDatabase(account.username, account.name || "", undefined)
+              await upsertUserToDatabase(account.username, formatDisplayName(account.name || ""), undefined)
 
               // Retrieve user profile and teacher status in parallel.
               const [databaseUser, teacherData] = await Promise.all([

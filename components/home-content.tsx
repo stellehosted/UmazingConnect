@@ -141,10 +141,10 @@ export function HomeContent() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="inline-block p-4 bg-secondary border-2 border-foreground shadow-brutal mb-4 animate-bounce-brutal">
+          <div className="inline-block p-4 rounded-full bg-secondary mb-4 animate-bounce-brutal">
             <Loader2 className="h-10 w-10 animate-spin text-secondary-foreground" />
           </div>
-          <p className="text-muted-foreground font-bold uppercase tracking-wide">Loading club posts...</p>
+          <p className="text-muted-foreground font-bold tracking-wide">Loading club posts...</p>
         </div>
       </div>
     )
@@ -154,11 +154,11 @@ export function HomeContent() {
     <div className="max-w-2xl mx-auto px-3 sm:px-4 py-6 sm:py-10 space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground border-2 border-foreground shadow-brutal transform -rotate-1">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-secondary-foreground transform -rotate-1">
           <Newspaper className="h-5 w-5" />
-          <span className="font-bold uppercase tracking-wide text-sm">Latest Updates</span>
+          <span className="font-bold tracking-wide text-sm">Latest Updates</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight uppercase">
+        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
           Club Feed
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground font-medium">
@@ -170,12 +170,12 @@ export function HomeContent() {
       {/* Posts Feed */}
       <div className="space-y-4 sm:space-y-6">
         {posts.length === 0 && !loading ? (
-          <Card className="hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all">
+          <Card className="transition-all">
             <CardContent className="py-12 sm:py-16 text-center">
-              <div className="inline-block p-4 bg-muted border-2 border-foreground mb-4">
+              <div className="inline-block p-4 rounded-full bg-muted mb-4">
                 <Users className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground" />
               </div>
-              <p className="text-lg sm:text-xl text-foreground font-bold uppercase">No club posts yet</p>
+              <p className="text-lg sm:text-xl text-foreground font-bold">No club posts yet</p>
               <p className="text-sm text-muted-foreground mt-2 font-medium">
                 Join a club to see posts from your clubs!
               </p>
@@ -186,7 +186,7 @@ export function HomeContent() {
             {posts.map((post, index) => (
               <Card
                 key={post.id}
-                className="overflow-hidden hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-brutal-lg transition-all animate-pop-in"
+                className="overflow-hidden transition-all animate-pop-in"
                 style={{
                   animationDelay: `${index * 50}ms`,
                   transform: index % 2 === 0 ? 'rotate(-0.3deg)' : 'rotate(0.3deg)'
@@ -198,11 +198,11 @@ export function HomeContent() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Link href={`/clubs/${post.club_id}`} className="hover:underline underline-offset-2">
-                            <h3 className="font-bold text-sm sm:text-base text-card-foreground uppercase tracking-wide truncate">
+                            <h3 className="font-bold text-sm sm:text-base text-card-foreground tracking-wide truncate">
                               {post.club_name || "Club"}
                             </h3>
                           </Link>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold uppercase border border-foreground">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
                             <Users className="h-3 w-3" />
                             Club
                           </span>
@@ -221,7 +221,7 @@ export function HomeContent() {
                   <p className="text-sm sm:text-base text-card-foreground leading-relaxed whitespace-pre-wrap">{renderTextWithLinks(post.content)}</p>
 
                   {post.image_url && (
-                    <div className="border-2 border-foreground shadow-brutal overflow-hidden -mx-4 sm:mx-0">
+                    <div className="rounded-lg overflow-hidden -mx-4 sm:mx-0">
                       <img
                         src={post.image_url.startsWith("data:") ? post.image_url : post.image_url}
                         alt="Post content"
@@ -231,15 +231,15 @@ export function HomeContent() {
                   )}
 
                   {/* Post Actions */}
-                  <div className="flex items-center justify-between pt-3 border-t-2 border-foreground/20">
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleLike(post.id, post.isLiked || false)}
-                      className={`gap-2 h-9 px-3 border-2 ${
+                      className={`gap-2 h-9 px-3 ${
                         post.isLiked
-                          ? "bg-destructive/10 border-destructive text-destructive hover:bg-destructive/20"
-                          : "border-transparent hover:border-foreground hover:bg-secondary/20"
+                          ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                          : "hover:bg-secondary/20"
                       }`}
                     >
                       <Heart className={`h-4 w-4 ${post.isLiked ? "fill-current" : ""}`} />
@@ -273,7 +273,7 @@ export function HomeContent() {
 
             {!hasMore && posts.length > 0 && (
               <div className="text-center py-6">
-                <div className="inline-block px-4 py-2 bg-muted border-2 border-foreground/30 text-sm text-muted-foreground font-bold uppercase">
+                <div className="inline-block px-4 py-2 rounded-full bg-muted text-sm text-muted-foreground font-bold">
                   You've reached the end
                 </div>
               </div>

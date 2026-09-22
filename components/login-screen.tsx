@@ -13,9 +13,10 @@ const berkeley = localFont({
   display: "swap",
 })
 
-// "Avenir" in the Sketch document. It ships with macOS/iOS; elsewhere this
-// falls back through the closest available humanist sans.
-const AVENIR = 'Avenir, "Avenir Next", "Nunito Sans", system-ui, sans-serif'
+// "Avenir" in the Sketch document. Defined once as --font-avenir in
+// globals.css (also used by the Button component); ships with macOS/iOS,
+// falls back through the closest available humanist sans elsewhere.
+const AVENIR = "var(--font-avenir)"
 
 const BG = "#011321"
 
