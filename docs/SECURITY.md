@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the security measures implemented in the SchoolConnect application to protect against common web vulnerabilities including SQL Injection, XSS (Cross-Site Scripting), CSRF, and other injection attacks.
+This document outlines the security measures implemented in the BPS Compass application to protect against common web vulnerabilities including SQL Injection, XSS (Cross-Site Scripting), CSRF, and other injection attacks.
 
 ## Critical Security Fixes
 
@@ -299,7 +299,7 @@ Should receive 429 status after limit is reached.
 
 ## Reporting Security Issues
 
-If you discover a security vulnerability, please email security@schoolconnect.com with:
+If you discover a security vulnerability, please email security@BPS Compass.com with:
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact

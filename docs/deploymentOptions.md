@@ -1,4 +1,4 @@
-# 🚀 Vercel Deployment Guide - SchoolConnect
+# 🚀 Vercel Deployment Guide - BPS Compass
 
 ## ✅ Why Vercel is Perfect for Your App
 
@@ -35,7 +35,7 @@ Before deploying, make sure you have:
 
 1. **Create a GitHub repository:**
    - Go to https://github.com/new
-   - Name: `schoolconnect` or `school-social-app`
+   - Name: `BPS Compass` or `school-social-app`
    - Make it **Private** (recommended for school projects)
    - Don't initialize with README (you already have code)
    - Click "Create repository"
@@ -44,13 +44,13 @@ Before deploying, make sure you have:
    ```bash
    git init
    git add .
-   git commit -m "Initial commit - SchoolConnect MVP"
+   git commit -m "Initial commit - BPS Compass MVP"
    ```
 
 3. **Connect to GitHub:**
    ```bash
    # Replace with your GitHub username and repo name
-   git remote add origin https://github.com/YOUR_USERNAME/schoolconnect.git
+   git remote add origin https://github.com/YOUR_USERNAME/BPS Compass.git
    git branch -M main
    git push -u origin main
    ```
@@ -75,7 +75,7 @@ You need a PostgreSQL database. Choose one:
 1. Go to https://vercel.com/dashboard
 2. Click "Storage" → "Create Database"
 3. Select "Postgres"
-4. Choose a name: `schoolconnect-db`
+4. Choose a name: `BPS Compass-db`
 5. Select region (closest to your school)
 6. Click "Create"
 7. Copy the connection string
@@ -86,7 +86,7 @@ You need a PostgreSQL database. Choose one:
 2. Sign up (free)
 3. Click "New Project"
 4. Fill in:
-   - Name: `SchoolConnect`
+   - Name: `BPS Compass`
    - Database Password: (create a strong password)
    - Region: (closest to your school)
 5. Wait for setup (~2 minutes)
@@ -98,7 +98,7 @@ You need a PostgreSQL database. Choose one:
 
 1. Go to https://neon.tech
 2. Sign up (free)
-3. Create new project: `SchoolConnect`
+3. Create new project: `BPS Compass`
 4. Copy connection string
 
 ---
@@ -112,9 +112,7 @@ Connect to your database and run the schema:
 $env:DATABASE_URL="your-database-connection-string"
 
 # Run migrations
-psql $env:DATABASE_URL -f database/clubs-schema.sql
-psql $env:DATABASE_URL -f database/add-posts-and-tags.sql
-psql $env:DATABASE_URL -f database/performance-indexes.sql
+psql $env:DATABASE_URL -f database/schema.sql
 ```
 
 **Or use a GUI tool:**
@@ -157,7 +155,7 @@ psql $env:DATABASE_URL -f database/performance-indexes.sql
 5. **Deploy:**
    - Click "Deploy"
    - Wait 2-3 minutes
-   - You'll get a URL like: `https://schoolconnect.vercel.app`
+   - You'll get a URL like: `https://BPS Compass.vercel.app`
 
 #### Method 2: Vercel CLI (Alternative)
 
@@ -175,7 +173,7 @@ vercel
 # - Set up and deploy? Yes
 # - Which scope? Your account
 # - Link to existing project? No
-# - Project name? schoolconnect
+# - Project name? BPS Compass
 # - Directory? ./
 # - Override settings? No
 
@@ -191,13 +189,13 @@ vercel --prod
    - Go to your project
    - Click "Settings" → "Domains"
    - Click "Add"
-   - Enter: `schoolconnect.berkeleyprep.org`
+   - Enter: `BPS Compass.berkeleyprep.org`
 
 2. **In Your School's DNS:**
    - Add CNAME record:
      ```
      Type: CNAME
-     Name: schoolconnect
+     Name: BPS Compass
      Value: cname.vercel-dns.com
      ```
    - Or A record (if root domain):
@@ -224,13 +222,13 @@ vercel --prod
    - Click "Authentication"
    - Add redirect URIs:
      ```
-     https://schoolconnect.vercel.app
-     https://schoolconnect.vercel.app/auth/callback
+     https://BPS Compass.vercel.app
+     https://BPS Compass.vercel.app/auth/callback
      ```
    - If using custom domain:
      ```
-     https://schoolconnect.berkeleyprep.org
-     https://schoolconnect.berkeleyprep.org/auth/callback
+     https://BPS Compass.berkeleyprep.org
+     https://BPS Compass.berkeleyprep.org/auth/callback
      ```
 
 3. **Save**
@@ -240,7 +238,7 @@ vercel --prod
 ### Step 7: Test Your Deployment (5 minutes)
 
 1. **Visit your URL:**
-   - `https://schoolconnect.vercel.app`
+   - `https://BPS Compass.vercel.app`
    - Or your custom domain
 
 2. **Test Authentication:**
@@ -413,13 +411,13 @@ npm run build  # Test locally first
 vercel --prod
 
 # Share URL with beta testers
-https://schoolconnect.vercel.app
+https://BPS Compass.vercel.app
 ```
 
 ### Full Launch (Week 2-4)
 ```bash
 # Set up custom domain
-schoolconnect.berkeleyprep.org
+BPS Compass.berkeleyprep.org
 
 # Update Azure AD
 # Add production redirect URIs
@@ -466,7 +464,7 @@ Before going live:
 git init
 git add .
 git commit -m "Initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/schoolconnect.git
+git remote add origin https://github.com/YOUR_USERNAME/BPS Compass.git
 git push -u origin main
 
 # 2. Deploy to Vercel

@@ -1,4 +1,4 @@
-# SchoolConnect MVP Deployment Guide
+# BPS Compass MVP Deployment Guide
 
 ## Pre-Launch Checklist
 
@@ -31,7 +31,7 @@ Create `.env.local` file:
 DATABASE_URL=postgresql://user:password@host:port/database
 POSTGRES_USER=your_user
 POSTGRES_PASSWORD=your_password
-POSTGRES_DB=schoolconnect
+POSTGRES_DB=BPS Compass
 
 # Azure AD Authentication
 NEXT_PUBLIC_AZURE_CLIENT_ID=your_azure_client_id
@@ -50,9 +50,7 @@ UPLOAD_MAX_SIZE=5242880
 
 ```bash
 # Run migrations in order:
-psql $DATABASE_URL -f database/clubs-schema.sql
-psql $DATABASE_URL -f database/add-posts-and-tags.sql
-psql $DATABASE_URL -f database/performance-indexes.sql
+psql $DATABASE_URL -f database/schema.sql
 ```
 
 #### 4. Security Updates
@@ -125,7 +123,7 @@ vercel --prod
 
 5. **Configure Custom Domain**
 - Go to Vercel Dashboard → Your Project → Settings → Domains
-- Add your custom domain (e.g., schoolconnect.berkeleyprep.org)
+- Add your custom domain (e.g., BPS Compass.berkeleyprep.org)
 
 ### Database Options for Vercel:
 
@@ -213,12 +211,12 @@ npm install -g pm2
 
 # Clone and setup
 git clone your-repo
-cd schoolconnect
+cd BPS Compass
 npm install
 npm run build
 
 # Start with PM2
-pm2 start npm --name "schoolconnect" -- start
+pm2 start npm --name "BPS Compass" -- start
 pm2 save
 pm2 startup
 ```
@@ -227,7 +225,7 @@ pm2 startup
 ```nginx
 server {
     listen 80;
-    server_name schoolconnect.berkeleyprep.org;
+    server_name BPS Compass.berkeleyprep.org;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -344,9 +342,9 @@ server {
 
 ### Support Channels:
 1. **In-app help** (FAQ page)
-2. **Email support** (support@schoolconnect.com)
+2. **Email support** (support@BPS Compass.com)
 3. **Office hours** (weekly drop-in)
-4. **Documentation** (help.schoolconnect.com)
+4. **Documentation** (help.BPS Compass.com)
 
 ### Response Time Goals:
 - Critical issues: 1 hour
@@ -482,12 +480,11 @@ npm start
 vercel --prod
 
 # Run database migrations
-psql $DATABASE_URL -f database/performance-indexes.sql
 ```
 
 ## Support
 
 For deployment assistance:
-- Email: tech@schoolconnect.com
-- Documentation: docs.schoolconnect.com
+- Email: tech@BPS Compass.com
+- Documentation: docs.BPS Compass.com
 - GitHub Issues: github.com/your-repo/issues

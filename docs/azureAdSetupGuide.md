@@ -28,7 +28,7 @@
 ### Step 4: Locate Your App
 
 Look for an app named something like:
-- "SchoolConnect"
+- "BPS Compass"
 - "BPS School App"
 - Or any app you created for this project
 
@@ -46,7 +46,7 @@ Look for an app named something like:
 
 2. **Fill in the details:**
    ```
-   Name: SchoolConnect
+   Name: BPS Compass
    Supported account types: 
      ☑ Accounts in this organizational directory only (Single tenant)
    Redirect URI: 
@@ -94,8 +94,8 @@ Directory (tenant) ID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 5. **For production** (when you deploy):
    ```
-   https://schoolconnect.berkeleyprep.org
-   https://schoolconnect.berkeleyprep.org/auth/callback
+   https://BPS Compass.berkeleyprep.org
+   https://BPS Compass.berkeleyprep.org/auth/callback
    ```
 
 6. **Scroll down and enable:**
@@ -215,7 +215,7 @@ Azure Portal
 - ✅ `https://your-ngrok-url.ngrok-free.app`
 
 **Production:**
-- ✅ `https://schoolconnect.berkeleyprep.org`
+- ✅ `https://BPS Compass.berkeleyprep.org`
 - ❌ Never use `http://` in production
 - ❌ Never use wildcard URIs
 
@@ -266,7 +266,7 @@ They can:
 
 ### What to Ask For
 
-"I need an Azure AD app registration for SchoolConnect with:
+"I need an Azure AD app registration for BPS Compass with:
 - Single-page application (SPA) platform
 - Redirect URIs for localhost and production
 - Microsoft Graph permissions: User.Read, email, profile, openid
@@ -293,12 +293,12 @@ Before testing authentication:
 
 When deploying to production:
 
-1. **Get your production domain** (e.g., `schoolconnect.berkeleyprep.org`)
+1. **Get your production domain** (e.g., `BPS Compass.berkeleyprep.org`)
 
 2. **Add production redirect URIs** in Azure AD:
    ```
-   https://schoolconnect.berkeleyprep.org
-   https://schoolconnect.berkeleyprep.org/auth/callback
+   https://BPS Compass.berkeleyprep.org
+   https://BPS Compass.berkeleyprep.org/auth/callback
    ```
 
 3. **Update environment variables** in Vercel/hosting platform
