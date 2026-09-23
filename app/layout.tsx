@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
@@ -36,8 +37,22 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
+// Self-hosted Avenir, split from fonts/Avenir.ttc into per-weight .ttf files
+// (next/font/local doesn't support .ttc directly) — see fonts/avenir/.
+const avenir = localFont({
+  src: [
+    { path: '../fonts/avenir/Avenir-Light.ttf', weight: '300', style: 'normal' },
+    { path: '../fonts/avenir/Avenir-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../fonts/avenir/Avenir-Medium.ttf', weight: '500', style: 'normal' },
+    { path: '../fonts/avenir/Avenir-Bold.ttf', weight: '700', style: 'normal' },
+    { path: '../fonts/avenir/Avenir-Black.ttf', weight: '900', style: 'normal' },
+  ],
+  variable: '--font-avenir-local',
+  display: 'swap',
+})
+
 // ✅ Combine your fonts once outside the component (server-safe)
-const fontVars = `${GeistSans.variable} ${GeistMono.variable}`
+const fontVars = `${GeistSans.variable} ${GeistMono.variable} ${avenir.variable}`
 
 export default function RootLayout({
   children,
@@ -45,9 +60,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      {/* ✅ Apply deterministic, precomputed font vars */}
-      <body className={`font-sans ${fontVars}`} suppressHydrationWarning>
+    // Font variable classes live on <html>, not <body>: theme tokens like
+    // --font-avenir are declared at :root, and a CSS custom property's var()
+    // fallback resolves against the element where it's DECLARED, not where
+    // it's consumed — so --font-avenir-local must already be in scope there.
+    <html lang="en" className={fontVars} suppressHydrationWarning>
+      <body className="font-sans" suppressHydrationWarning>
         <ServiceWorkerRegister />
         <ThemeProvider
           attribute="class"

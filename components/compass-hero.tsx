@@ -40,14 +40,6 @@ export function CompassHero({
   const needleRef = useRef<SVGGElement>(null)
 
   useEffect(() => {
-    if (!followPointer) return
-
-    // No cursor to follow on touch, and a needle that chases the pointer is
-    // exactly the kind of motion reduced-motion users are opting out of.
-    const hasFinePointer = window.matchMedia("(pointer: fine)").matches
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (!hasFinePointer || prefersReducedMotion) return
-
     const state = { angle: NEEDLE_REST_ANGLE, velocity: 0 }
     let target = NEEDLE_REST_ANGLE
     let frame = 0

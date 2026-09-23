@@ -77,6 +77,7 @@ export async function POST(
     const userId = body.userId
     const content = body.content
     const imageUrl = body.imageUrl
+    const title = typeof body.title === 'string' ? body.title.trim() : ''
 
     if (!userId) {
       return NextResponse.json(
@@ -116,6 +117,13 @@ export async function POST(
       )
     }
 
+    if (!title) {
+      return NextResponse.json(
+        { success: false, error: 'Post title is required' },
+        { status: 400 }
+      )
+    }
+
     // Verify user is a member OR sponsor of the club
     const [memberCheck, sponsorCheck] = await Promise.all([
       pool.query('SELECT id FROM club_members WHERE club_id = $1 AND user_id = $2', [clubId, userId]),
@@ -131,8 +139,8 @@ export async function POST(
 
     // Create post
     const insertQuery = `
-      INSERT INTO posts (club_id, user_id, content, image_url)
-      VALUES ($1, $2, $3, $4)
+      INSERT INTO posts (club_id, user_id, content, image_url, title)
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING *
     `
 
@@ -141,6 +149,7 @@ export async function POST(
       userId,
       content.trim(),
       imageUrl || null,
+      title,
     ])
 
     // Get author info

@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       SELECT 
         p.id,
         p.club_id,
+        p.title,
         p.content,
         p.image_url,
         COUNT(DISTINCT pl.id)::int as likes_count,

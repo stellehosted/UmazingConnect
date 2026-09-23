@@ -119,7 +119,7 @@
 }
 
 @theme inline {
-  --font-avenir: Avenir, "Avenir Next", "Nunito Sans", system-ui, sans-serif;
+  --font-avenir: var(--font-avenir-local, Avenir), Avenir, "Avenir Next", "Nunito Sans", system-ui, sans-serif;
   --font-sans: var(--font-avenir);
   --font-mono: var(--font-geist-mono);
   --color-background: var(--background);

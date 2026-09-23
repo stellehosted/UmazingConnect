@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { PostCard } from "@/components/post-card"
 import {
   Dialog,
   DialogContent,
@@ -111,6 +112,31 @@ export default function ComponentGalleryPage() {
               <Button size="sm">Action</Button>
             </CardFooter>
           </Card>
+        </Section>
+
+        <Section title="Post Card">
+          <div className="w-[500px]">
+            <PostCard
+              post={{
+                id: "demo-1",
+                club_id: "demo-club",
+                club_name: "Sequential Arts Club",
+                club_avatar: "/icon-512.png",
+                title: "GOAT and Hoppers",
+                author_name: "Leila DiPiazza",
+                author_avatar: null,
+                author_email: "leila@example.com",
+                content:
+                  "Hey everyone, we still have club today in G116! I'll be putting on two different animated movie trailers: GOAT and Hoppers! I think they're both pretty cool, and we can talk about if one seems more compelling than the other due to the animation :)\n\nhope to see you all there!\n-Sequential Arts Club",
+                image_url: null,
+                likes_count: 4,
+                comments_count: 0,
+                created_at: new Date().toISOString(),
+                isLiked: false,
+              }}
+              onLike={() => {}}
+            />
+          </div>
         </Section>
 
         <Section title="Alert">

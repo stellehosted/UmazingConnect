@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquare, Upload, X } from "lucide-react"
@@ -30,6 +31,7 @@ export const CreatePostDialog = memo(function CreatePostDialog({
   onPostCreated,
 }: CreatePostDialogProps) {
   const [open, setOpen] = useState(false)
+  const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -132,7 +134,7 @@ export const CreatePostDialog = memo(function CreatePostDialog({
   }, [])
 
   const handleSubmit = useCallback(async () => {
-    if (!content.trim() || cooldownSeconds > 0) return
+    if (!title.trim() || !content.trim() || cooldownSeconds > 0) return
 
     setLoading(true)
 
@@ -166,12 +168,14 @@ export const CreatePostDialog = memo(function CreatePostDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
+          title,
           content,
           imageUrl,
         }),
       })
 
       if (response.ok) {
+        setTitle("")
         setContent("")
         setSelectedImage(null)
         setImagePreview(null)
@@ -204,12 +208,13 @@ export const CreatePostDialog = memo(function CreatePostDialog({
     } finally {
       setLoading(false)
     }
-  }, [clubId, userId, content, selectedImage, onPostCreated, cooldownSeconds])
+  }, [clubId, userId, title, content, selectedImage, onPostCreated, cooldownSeconds])
 
   const handleOpenChange = useCallback((newOpen: boolean) => {
     setOpen(newOpen)
     if (!newOpen) {
       // Reset form when closing
+      setTitle("")
       setContent("")
       setSelectedImage(null)
       setImagePreview(null)
@@ -231,6 +236,20 @@ export const CreatePostDialog = memo(function CreatePostDialog({
           <DialogDescription className="text-xs sm:text-sm">Share an update with club members</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 sm:space-y-4" onClick={(e) => e.stopPropagation()}>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="post-title" className="text-sm">Post Title</Label>
+            <Input
+              id="post-title"
+              placeholder="Give your post a title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
+              maxLength={200}
+              className="text-sm"
+            />
+          </div>
+
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="post-content" className="text-sm">Post Content</Label>
             <Textarea
@@ -284,7 +303,7 @@ export const CreatePostDialog = memo(function CreatePostDialog({
           <Button
             onClick={handleSubmit}
             className="w-full h-9 sm:h-10 text-sm"
-            disabled={!content.trim() || loading || cooldownSeconds > 0}
+            disabled={!title.trim() || !content.trim() || loading || cooldownSeconds > 0}
           >
             {loading ? "Posting..." : cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : "Post"}
           </Button>

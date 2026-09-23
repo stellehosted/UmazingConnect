@@ -1,28 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Heart, Users, Loader2, Newspaper } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Users, Loader2, Newspaper } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
-import Link from "next/link"
-import { renderTextWithLinks } from "@/lib/render-text-with-links"
-
-interface ClubPost {
-  id: string
-  club_id: string
-  club_name?: string
-  club_avatar?: string
-  author_name: string
-  author_avatar: string | null
-  author_email: string
-  content: string
-  image_url: string | null
-  likes_count: number
-  comments_count: number
-  created_at: string
-  isLiked?: boolean
-}
+import { PostCard, type ClubPost } from "@/components/post-card"
 
 export function HomeContent() {
   const { user } = useAuth()
@@ -122,21 +105,6 @@ export function HomeContent() {
     }
   }
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return "Just now"
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    return date.toLocaleDateString()
-  }
-
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
@@ -183,71 +151,8 @@ export function HomeContent() {
           </Card>
         ) : (
           <>
-            {posts.map((post, index) => (
-              <Card
-                key={post.id}
-                className="overflow-hidden transition-all animate-pop-in"
-                style={{
-                  animationDelay: `${index * 50}ms`,
-                  transform: index % 2 === 0 ? 'rotate(-0.3deg)' : 'rotate(0.3deg)'
-                }}
-              >
-                <CardHeader className="pb-3 sm:pb-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/clubs/${post.club_id}`} className="hover:underline underline-offset-2">
-                            <h3 className="font-bold text-sm sm:text-base text-card-foreground tracking-wide truncate">
-                              {post.club_name || "Club"}
-                            </h3>
-                          </Link>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
-                            <Users className="h-3 w-3" />
-                            Club
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground font-medium flex-wrap">
-                          <span className="truncate">by {post.author_name}</span>
-                          <span className="text-foreground/30">•</span>
-                          <span className="font-bold">{formatTimestamp(post.created_at)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="pt-0 space-y-4">
-                  <p className="text-sm sm:text-base text-card-foreground leading-relaxed whitespace-pre-wrap">{renderTextWithLinks(post.content)}</p>
-
-                  {post.image_url && (
-                    <div className="rounded-lg overflow-hidden -mx-4 sm:mx-0">
-                      <img
-                        src={post.image_url.startsWith("data:") ? post.image_url : post.image_url}
-                        alt="Post content"
-                        className="w-full h-48 sm:h-64 object-cover"
-                      />
-                    </div>
-                  )}
-
-                  {/* Post Actions */}
-                  <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleLike(post.id, post.isLiked || false)}
-                      className={`gap-2 h-9 px-3 ${
-                        post.isLiked
-                          ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                          : "hover:bg-secondary/20"
-                      }`}
-                    >
-                      <Heart className={`h-4 w-4 ${post.isLiked ? "fill-current" : ""}`} />
-                      <span className="font-bold">{post.likes_count || 0}</span>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} onLike={handleLike} />
             ))}
 
             {/* Load More Button */}
