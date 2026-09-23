@@ -87,7 +87,7 @@ export function PostCard({
             <Link href={`/clubs/${post.club_id}`} className="text-black hover:underline underline-offset-2">
               {post.club_name || "Club"}
             </Link>
-            <span className="text-black/50"> | {post.author_name} | {formatTimestamp(post.created_at)}</span>
+            <span className="text-black/50"> • {post.author_name} • {formatTimestamp(post.created_at)}</span>
           </p>
         </div>
       </div>
