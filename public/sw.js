@@ -1,6 +1,6 @@
 // Service Worker for BPS Compass Push Notifications
 
-const CACHE_NAME = 'schoolconnect-v1'
+const CACHE_NAME = 'BPS Compass'
 
 // Install event - cache essential assets
 self.addEventListener('install', (event) => {
@@ -81,7 +81,7 @@ self.addEventListener('push', (event) => {
     // Android collapses notifications that share a tag. Using one constant tag
     // meant every club post overwrote the previous one; key off the actual
     // notification so unrelated items stack in the shade instead.
-    tag: data.tag || data.notificationId || `schoolconnect-${Date.now()}`,
+    tag: data.tag || data.notificationId || `BPS Compass-${Date.now()}`,
     renotify: true,
   }
 

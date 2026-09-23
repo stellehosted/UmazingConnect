@@ -55,4 +55,4 @@ console.log('   2. Click device icon (Ctrl+Shift+M)');
 console.log('   3. Select device from dropdown');
 console.log('');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-console.log('📚 Full testing guide: scripts/mobile-test.md\n');
+console.log('📚 Full testing guide: docs/mobileTests.md\n');

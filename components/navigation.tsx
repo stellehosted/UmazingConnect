@@ -90,7 +90,7 @@ export function Navigation({ activeSection, onSectionChange, user, onLogout }: N
               <Logo className="h-9 w-9" />
               <div>
                 <span className="text-xl font-black text-foreground tracking-tight">
-                  The<span className="text-secondary"> Compass</span>
+                  BPS Compass
                 </span>
               </div>
             </div>

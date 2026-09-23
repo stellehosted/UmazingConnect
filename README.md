@@ -48,12 +48,40 @@ npm run dev
 
 A demo user account will get you past Azure.
 
+### Local database (optional)
+
+Demo mode fakes the login but not the data, so clubs, posts and roles need a database. To run one locally:
+
+```bash
+# Install and start Postgres 15 (macOS)
+brew install postgresql@15
+brew services start postgresql@15
+# Homebrew doesn't add it to PATH: put this in ~/.zshrc
+export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
+
+# Create the database, apply the schema, and load test data in one step
+scripts/reset-db.sh
+```
+
+Then point `.env.local` at it (Homebrew's Postgres uses your macOS username, no password):
+
+```
+DATABASE_URL="postgresql://<your-mac-username>@localhost:5432/school_social_app"
+```
+
+- `database/schema.sql` is the current schema. The admin tables live in `migrations/add_admin_system_tables.sql`, and the reset script applies both.
+- `database/test-data.sql` adds two clubs: a fully populated one (sponsor, president, officer, members, posts) and an empty one for testing empty states.
+- `scripts/reset-db.sh` **deletes** the target database first. It is for local development only.
+- To act as a seeded user (e.g. the sponsor), change that user's email in the database to your own `@berkeleyprep.org` address and log in through Azure.
+
+More guides (security, admin system, deployment, Azure setup) are in `docs/`.
+
 ### 3. Azure Authentication Setup (dev)
 
 1. **Go to Azure Portal**: https://portal.azure.com
 2. **Navigate to**: Azure Active Directory > App registrations
 3. **Create New Registration**:
-   - Name: `SchoolConnect`
+   - Name: `BPS Compass`
    - Supported account types: `Accounts in this organizational directory only`
    - Redirect URI (dev): Web > `http://localhost:3000`
 4. **Get Client ID**: Copy the Application (client) ID
