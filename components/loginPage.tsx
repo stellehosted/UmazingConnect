@@ -4,7 +4,7 @@ import { useEffect, useState, type CSSProperties } from "react"
 import localFont from "next/font/local"
 import { RefreshCw } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { CompassHero } from "@/components/compass-hero"
+import { CompassHero } from "@/components/loginCompass"
 import { useToast } from "@/hooks/use-toast"
 
 const berkeley = localFont({
@@ -263,9 +263,7 @@ export function LoginScreen() {
         )}
 
         <p style={footerStyle}>
-          Made with love
-          <br />
-          by Computer Science Club
+          Built by Computer Science Club
         </p>
       </div>
 
@@ -312,9 +310,7 @@ export function LoginScreen() {
         </div>
 
         <p style={portraitFooterStyle} className="absolute inset-x-0 text-center">
-          Made with love
-          <br />
-          by Computer Science Club
+          Built by Computer Science Club
         </p>
       </div>
     </div>
