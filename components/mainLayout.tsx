@@ -3,11 +3,11 @@
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
-import { HomeContent } from "@/components/home-content"
-import { ClubsContent } from "@/components/clubs-content"
+import { HomeContent } from "@/components/homePage"
+import { ClubsContent } from "@/components/clubsPage"
 import { useAuth } from "@/contexts/auth-context"
-import { ProfileCreation } from "@/components/profile-creation"
-import { LoginScreen } from "@/components/login-screen"
+import { ProfileCreation } from "@/components/profileCreation"
+import { LoginScreen } from "@/components/loginPage"
 
 type ActiveSection = "home" | "clubs"
 

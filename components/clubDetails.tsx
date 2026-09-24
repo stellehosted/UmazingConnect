@@ -24,11 +24,11 @@ import {
   Trash2,
 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { ManageLeadershipDialog } from "./manage-leadership-dialog"
-import { EditClubDialog } from "./edit-club-dialog"
-import { ManageTagsDialog } from "./manage-tags-dialog"
-import { TransferPresidencyDialog } from "./transfer-presidency-dialog"
-import { CreatePostDialog } from "./create-post-dialog"
+import { ManageLeadershipDialog } from "./dialogManageLeadership"
+import { EditClubDialog } from "./dialogEditClub"
+import { ManageTagsDialog } from "./dialogManageTags"
+import { TransferPresidencyDialog } from "./dialogTransferPresidency"
+import { CreatePostDialog } from "./dialogCreatePost"
 import { renderTextWithLinks } from "@/lib/render-text-with-links"
 
 interface ClubMember {
@@ -432,30 +432,6 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                     />
                   )}
 
-                  {user?.id && club.memberRole !== "president" && !club.is_sponsor && (
-                    <Button
-                      onClick={handleJoinLeave}
-                      variant={club.is_joined ? "destructive" : "default"}
-                      className="w-full h-9 sm:h-10 text-sm"
-                    >
-                      {club.is_joined ? "Leave Club" : "Join Club"}
-                    </Button>
-                  )}
-                  {user?.id && club.memberRole === "president" && (
-                    <div className="text-xs text-muted-foreground text-center py-2">
-                      Use "Leave Presidency" below to leave this club
-                    </div>
-                  )}
-                  {/* Leave Sponsorship button for sponsors */}
-                  {user?.id && club.is_sponsor && (
-                    <Button
-                      variant="outline"
-                      className="w-full h-9 sm:h-10 text-sm"
-                      onClick={handleLeaveSponsor}
-                    >
-                      Leave Sponsorship
-                    </Button>
-                  )}
                   {isLeader && (
                     <>
                       <EditClubDialog
@@ -493,6 +469,26 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                       currentUserId={user?.id || ""}
                       onSuccess={() => router.push("/")}
                     />
+                  )}
+                  {user?.id && club.memberRole !== "president" && !club.is_sponsor && (
+                    <Button
+                      onClick={handleJoinLeave}
+                      variant={club.is_joined ? "destructive" : "default"}
+                      className="w-full h-9 sm:h-10 text-sm"
+                    >
+                      {club.is_joined ? "Leave Club" : "Join Club"}
+                    </Button>
+                  )}
+
+                  {/* Leave Sponsorship button for sponsors */}
+                  {user?.id && club.is_sponsor && (
+                    <Button
+                      variant="outline"
+                      className="w-full h-9 sm:h-8 text-sm"
+                      onClick={handleLeaveSponsor}
+                    >
+                      Leave Sponsorship
+                    </Button>
                   )}
                 </>
               ) : (

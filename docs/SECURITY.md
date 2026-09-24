@@ -36,7 +36,7 @@ updateFields.push(`name = $${paramIndex++}`)  // ✅ Safe parameterized query
    - HTML tags and dangerous characters are stripped
    - Special characters are escaped
 
-2. **Output Encoding** (`components/security/safe-html.tsx`):
+2. **Output Encoding** (`components/security/safeHtml.tsx`):
    - Safe HTML rendering component
    - Automatic sanitization of user-generated content
    - Whitelist-based approach for allowed HTML tags
@@ -47,7 +47,7 @@ updateFields.push(`name = $${paramIndex++}`)  // ✅ Safe parameterized query
 
 **Usage Example**:
 ```typescript
-import { SafeHtml, SafeText } from '@/components/security/safe-html'
+import { SafeHtml, SafeText } from '@/components/security/safeHtml'
 
 // Render user content safely
 <SafeHtml html={userGeneratedContent} />
@@ -147,7 +147,7 @@ return secureSuccessResponse({ data: result })
 
 1. **Sanitize user-generated content**:
 ```typescript
-import { SafeHtml } from '@/components/security/safe-html'
+import { SafeHtml } from '@/components/security/safeHtml'
 
 <SafeHtml html={post.content} className="text-sm" />
 ```
@@ -258,7 +258,7 @@ export const POST = withRateLimit(async (request) => {
 
 3. **Update React components to use SafeHtml**:
 ```typescript
-import { SafeHtml } from '@/components/security/safe-html'
+import { SafeHtml } from '@/components/security/safeHtml'
 
 // Replace dangerouslySetInnerHTML
 <SafeHtml html={userContent} className="prose" />

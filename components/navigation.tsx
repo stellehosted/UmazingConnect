@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Home, Users, Bell, Settings, LogOut, Menu, HelpCircle, User } from "lucide-react"
 import { UserProfile } from "@/lib/auth-config"
-import { UserSettingsDialog } from "./user-settings-dialog"
+import { UserSettingsDialog } from "./dialogUserSettings"
 import { Logo } from "./logo"
 import Link from "next/link"
 

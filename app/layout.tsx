@@ -5,8 +5,8 @@ import { GeistMono } from 'geist/font/mono'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { AuthProvider } from '@/contexts/auth-context'
-import { ThemeProvider } from '@/components/theme-provider'
-import { ServiceWorkerRegister } from '@/components/service-worker-register'
+import { ThemeProvider } from '@/components/themeProvider'
+import { ServiceWorkerRegister } from '@/components/serviceWorkerRegister'
 import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {

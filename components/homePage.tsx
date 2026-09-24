@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Users, Loader2, Newspaper } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
-import { PostCard, type ClubPost } from "@/components/post-card"
+import { PostCard, type ClubPost } from "@/components/postCard"
 
 export function HomeContent() {
   const { user } = useAuth()

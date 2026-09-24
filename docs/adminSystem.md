@@ -291,20 +291,20 @@ CREATE TABLE audit_log (
 ## 8. UI Components
 
 ### New Components
-- `admin-dashboard.tsx` - Main admin dashboard
+- `dashboardAdmin.tsx` - Main admin dashboard
 - `admin-clubs-management.tsx` - Club management interface
 - `admin-reports-queue.tsx` - Reports moderation queue
 - `admin-user-management.tsx` - User role management
-- `sponsor-dashboard.tsx` - Sponsor overview
+- `dashboardSponsor.tsx` - Sponsor overview
 - `sponsor-requests-queue.tsx` - Leadership approval queue
 - `report-post-dialog.tsx` - Post reporting dialog
 - `leadership-request-dialog.tsx` - Request leadership change
 - `approve-request-dialog.tsx` - Approve/reject leadership request
 
 ### Modified Components
-- `claim-club-dialog.tsx` - Add sponsor claiming option
-- `club-detail-page.tsx` - Show multiple presidents, sponsor info
-- `manage-leadership-dialog.tsx` - Create requests instead of direct changes
+- `dialogClaimClub.tsx` - Add sponsor claiming option
+- `clubDetails.tsx` - Show multiple presidents, sponsor info
+- `dialogManageLeadership.tsx` - Create requests instead of direct changes
 - Navigation - Add admin/sponsor links for authorized users
 
 ---

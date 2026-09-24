@@ -207,14 +207,53 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Appearance Settings */}
+      {/* Quick Actions */}
       <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Link href="/notifications">
+            <Button variant="outline" className="w-full justify-start">
+              <Bell className="h-4 w-4 mr-2" />
+              Notifications & Preferences
+            </Button>
+          </Link>
+
+          {stats?.isSponsor && (
+            <Link href="/sponsor">
+              <Button variant="outline" className="w-full justify-start">
+                <Shield className="h-4 w-4 mr-2" />
+                Sponsor Dashboard
+              </Button>
+            </Link>
+          )}
+
+          {stats?.isCoordinator && (
+            <Link href="/admin">
+              <Button variant="outline" className="w-full justify-start">
+                <SettingsIcon className="h-4 w-4 mr-2" />
+                Admin Dashboard
+              </Button>
+            </Link>
+          )}
+
+          <Link href="/faq">
+            <Button variant="outline" className="w-full justify-start">
+              <HelpCircle className="h-4 w-4 mr-2" />
+              FAQ & Support
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+
+      {/* Dark Mode (Temporarily Disabled) */}
+      {/* <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
             Appearance
           </CardTitle>
-          <CardDescription>Customize the look and feel of the app</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
@@ -230,8 +269,8 @@ export default function SettingsPage() {
                 </Label>
                 <p className="text-sm text-muted-foreground">
                   {mounted && theme === 'dark'
-                    ? 'Sleek dark theme enabled'
-                    : 'Switch to a refined dark theme'}
+                    ? 'Dark'
+                    : 'Light'}
                 </p>
               </div>
             </div>
@@ -243,6 +282,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      \*}
 
       {/* Statistics */}
       {loading ? (
@@ -254,11 +294,10 @@ export default function SettingsPage() {
         </Card>
       ) : (
         <>
-          {/* Club Involvement */}
           <Card>
             <CardHeader>
-              <CardTitle>Club Involvement</CardTitle>
-              <CardDescription>Your participation in clubs</CardDescription>
+              <CardTitle>Statistics</CardTitle>
+              <CardDescription>Your participation & engagement</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -289,14 +328,6 @@ export default function SettingsPage() {
                 )}
               </div>
             </CardContent>
-          </Card>
-
-          {/* Activity Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Activity</CardTitle>
-              <CardDescription>Your engagement on the platform</CardDescription>
-            </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-muted rounded-lg">
@@ -315,53 +346,6 @@ export default function SettingsPage() {
           </Card>
         </>
       )}
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Link href="/notifications">
-            <Button variant="outline" className="w-full justify-start">
-              <Bell className="h-4 w-4 mr-2" />
-              Notifications & Preferences
-            </Button>
-          </Link>
-
-          {stats?.isSponsor && (
-            <Link href="/sponsor">
-              <Button variant="outline" className="w-full justify-start">
-                <Shield className="h-4 w-4 mr-2" />
-                Sponsor Dashboard
-              </Button>
-            </Link>
-          )}
-
-          {stats?.isCoordinator && (
-            <Link href="/admin">
-              <Button variant="outline" className="w-full justify-start">
-                <SettingsIcon className="h-4 w-4 mr-2" />
-                Admin Dashboard
-              </Button>
-            </Link>
-          )}
-
-          <Link href="/">
-            <Button variant="outline" className="w-full justify-start">
-              <Users className="h-4 w-4 mr-2" />
-              Browse Clubs
-            </Button>
-          </Link>
-
-          <Link href="/faq">
-            <Button variant="outline" className="w-full justify-start">
-              <HelpCircle className="h-4 w-4 mr-2" />
-              FAQ & Support
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
     </div>
   )
 }

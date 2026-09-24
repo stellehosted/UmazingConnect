@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Demo mode - skip Azure authentication
     if (DEMO_MODE) {
       setUser(DEMO_USER)
-      setIsTeacher(false)
+      setIsTeacher(DEMO_USER.role === "sponsor")
       setIsAuthenticated(true)
       setHasProfile(true)
       setIsLoading(false)

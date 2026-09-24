@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Settings, Upload, X } from "lucide-react"
-import { ImageCropDialog } from "./image-crop-dialog"
+import { ImageCropDialog } from "./dialogImageCrop"
 
 interface EditClubDialogProps {
   clubId: string

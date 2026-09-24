@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from "@/contexts/auth-context"
-import { SponsorDashboard } from "@/components/sponsor-dashboard"
+import { SponsorDashboard } from "@/components/dashboardSponsor"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 

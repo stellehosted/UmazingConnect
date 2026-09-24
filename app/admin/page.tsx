@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from "@/contexts/auth-context"
-import { AdminDashboard } from "@/components/admin-dashboard"
+import { AdminDashboard } from "@/components/dashboardAdmin"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 

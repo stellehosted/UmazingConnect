@@ -188,25 +188,23 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" title="Manage Leadership">
-          <UserCog className="h-4 w-4" />
+        <Button variant="outline" className="w-full">
+          <UserCog className="h-4 w-4 mr-2" />
+          Manage Members
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
             <UserCog className="h-4 w-4 sm:h-5 sm:w-5" />
-            Manage Leadership - {clubName}
+            Manage Members
           </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
-            Add, promote, or manage leadership roles for your club members.
-          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 sm:space-y-6">
-          {/* Current Leaders */}
+          {/* Leadership */}
           <div className="space-y-2 sm:space-y-3">
-            <h3 className="text-base sm:text-lg font-semibold">Current Leadership</h3>
+            <h3 className="text-base sm:text-lg font-semibold">Leadership</h3>
             {leaders.length > 0 ? (
               <div className="space-y-2">
                 {leaders.map((leader) => {
@@ -241,45 +239,6 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
             ) : (
               <p className="text-sm text-muted-foreground">No other leaders assigned yet.</p>
             )}
-          </div>
-
-          {/* Add Leader by Email */}
-          <div className="space-y-2 sm:space-y-3">
-            <h3 className="text-base sm:text-lg font-semibold">Add New Leader</h3>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="flex-1">
-                <Label htmlFor="leader-email" className="text-sm">Email Address</Label>
-                <Input
-                  id="leader-email"
-                  type="email"
-                  placeholder="Enter member's email"
-                  value={newLeaderEmail}
-                  onChange={(e) => setNewLeaderEmail(e.target.value)}
-                  className="h-9 sm:h-10 text-sm"
-                />
-              </div>
-              <div className="w-full sm:w-40">
-                <Label htmlFor="leader-role" className="text-sm">Role</Label>
-                <Select value={newLeaderRole} onValueChange={setNewLeaderRole}>
-                  <SelectTrigger className="h-9 sm:h-10 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEADERSHIP_ROLES.map((role) => (
-                      <SelectItem key={role.value} value={role.value}>
-                        {role.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-end">
-                <Button onClick={handleAddLeaderByEmail} disabled={!newLeaderEmail.trim()} className="w-full sm:w-auto h-9 sm:h-10 text-sm">
-                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
-                  Add
-                </Button>
-              </div>
-            </div>
           </div>
 
           {/* Promote Members */}
@@ -318,6 +277,45 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
             )}
           </div>
         </div>
+        <p></p>
+        {/* Add Leader by Email */}
+          <div className="space-y-1">
+            <h3 className="text-base sm:text-lg font-semibold">Add Leadership</h3>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex-1">
+                <Label htmlFor="leader-email" className="text-sm">Email</Label>
+                <Input
+                  id="leader-email"
+                  type="email"
+                  placeholder="@berkeleyprep.org"
+                  value={newLeaderEmail}
+                  onChange={(e) => setNewLeaderEmail(e.target.value)}
+                  className="h-9 sm:h-8 text-sm"
+                />
+              </div>
+              <div className="w-full sm:w-40">
+                <Label htmlFor="leader-role" className="text-sm">Role</Label>
+                <Select value={newLeaderRole} onValueChange={setNewLeaderRole}>
+                  <SelectTrigger className="h-9 sm:h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LEADERSHIP_ROLES.map((role) => (
+                      <SelectItem key={role.value} value={role.value}>
+                        {role.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button onClick={handleAddLeaderByEmail} disabled={!newLeaderEmail.trim()} className="w-full sm:w-auto h-9 sm:h-8 text-sm">
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                  Add
+                </Button>
+              </div>
+            </div>
+          </div>
       </DialogContent>
     </Dialog>
   )

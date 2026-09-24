@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquare, Upload, X } from "lucide-react"
 import { validateAndCompressImage } from "@/lib/image-compression"
-import { ImageCropDialog } from "./image-crop-dialog"
+import { ImageCropDialog } from "./dialogImageCrop"
 
 interface CreatePostDialogProps {
   clubId: string
@@ -224,7 +224,7 @@ export const CreatePostDialog = memo(function CreatePostDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="flex-1 min-w-0">
+        <Button variant="outline" className="w-full">
           <MessageSquare className="h-4 w-4 mr-2" />
           <span className="hidden xs:inline">Post</span>
           <span className="xs:hidden">Post</span>

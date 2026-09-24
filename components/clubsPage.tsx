@@ -34,11 +34,10 @@ import {
   Grid3X3,
 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { AdminClubImport } from "./admin-club-import"
-import { ClaimClubDialog } from "./claim-club-dialog"
-import { ClaimSponsorDialog } from "./claim-sponsor-dialog"
-import { ManageLeadershipDialog } from "./manage-leadership-dialog"
-import { CreatePostDialog } from "./create-post-dialog"
+import { AdminClubImport } from "./adminClubImport"
+import { ClaimClubDialog } from "./dialogClaimClub"
+import { ClaimSponsorDialog } from "./dialogClaimSponsor"
+import { CreatePostDialog } from "./dialogCreatePost"
 
 interface Club {
   id: string
@@ -405,16 +404,6 @@ export function ClubsContent() {
                       userId={user.id}
                       onPostCreated={loadClubs}
                     />
-
-                    {(club.memberRole === "president" || club.is_sponsor) && (
-                      <ManageLeadershipDialog
-                        clubId={club.id}
-                        clubName={club.name}
-                        currentUserId={user?.id || ""}
-                        isPresident={club.memberRole === "president"}
-                        isSponsor={!!club.is_sponsor}
-                      />
-                    )}
 
                     {club.memberRole === "president" && (
                       <Dialog
