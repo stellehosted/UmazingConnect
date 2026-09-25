@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { PublicClientApplication, AccountInfo, AuthenticationResult } from "@azure/msal-browser"
 import { msalConfig, loginRequest, isBerkeleyPrepEmail, UserProfile } from "@/lib/auth-config"
-import { DEMO_MODE, DEMO_USER } from "@/lib/demo-mode"
+import { DEMO_MODE, DEMO_EMAIL } from "@/lib/demo-mode"
 import { debugMSAL } from "@/lib/debug-msal"
 import { setupCryptoPolyfill, isSecureContext, getSecurityWarning } from "@/lib/crypto-polyfill"
 import { autoFixStuckInteraction } from "@/lib/clear-msal-cache"
@@ -69,12 +69,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Demo mode - skip Azure authentication
     if (DEMO_MODE) {
-      setUser(DEMO_USER)
-      setIsTeacher(DEMO_USER.role === "sponsor")
-      setIsAuthenticated(true)
-      setHasProfile(true)
-      setIsLoading(false)
-      setIsInitialized(true)
+      signInAsDemoUser().finally(() => {
+        setIsLoading(false)
+        setIsInitialized(true)
+      })
       return
     }
 
@@ -348,9 +346,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Demo mode - simulate login
       if (DEMO_MODE) {
-        setUser(DEMO_USER)
-        setIsAuthenticated(true)
-        setHasProfile(true)
+        if (!(await signInAsDemoUser())) {
+          alert(`Couldn't find the demo user (${DEMO_EMAIL}) in the database. Load the test data with scripts/reset-db.sh, then try again.`)
+        }
         setIsLoading(false)
         setIsInteractionInProgress(false)
         return
@@ -428,6 +426,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Error retrieving user from database:", error)
       return null
     }
+  }
+
+  // Demo mode: sign in as the seeded database user for NEXT_PUBLIC_DEMO_PERSONA
+  const signInAsDemoUser = async (): Promise<boolean> => {
+    const demoUser = await getUserFromDatabase(DEMO_EMAIL)
+    if (!demoUser) {
+      console.error(`Demo mode: no user with email ${DEMO_EMAIL} in the database. Load the test data with scripts/reset-db.sh.`)
+      return false
+    }
+    setUser(demoUser)
+    setIsTeacher(demoUser.role === "sponsor")
+    setIsAuthenticated(true)
+    setHasProfile(true)
+    return true
   }
 
   const upsertUserToDatabase = async (email: string, name: string, avatarUrl?: string): Promise<void> => {

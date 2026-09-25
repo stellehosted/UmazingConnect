@@ -1,44 +1,44 @@
-// Demo mode configuration for testing without Azure authentication
+// Demo mode configuration for testing without Azure authentication.
+//
+// Demo mode skips the Microsoft login and signs in as a user that already exists
+// in the database, looked up by email exactly like a real login. Who that user is
+// (id, name, role, grade) is defined once, in database/test-data.sql; load it with
+// scripts/reset-db.sh. This file only says which email each short persona name means.
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true"
 
-export type DemoPersona = "sponsor" | "president" | "officer" | "member"
+export type DemoPersona = "coordinator" | "sponsor" | "president" | "vp" | "officer" | "member"
 
-const demoUser = (id: string, email: string, name: string, role: string, grade: string, bio: string) => ({
-  id,
-  email,
-  name,
-  role,
-  grade,
-  bio,
-  interests: ["Technology", "Science", "Music"],
-  profilePicture: "/placeholder-user.jpg",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-})
-
-// These IDs and emails match the users in database/test-data.sql (load it with
-// scripts/reset-db.sh), so club, membership and role lookups hit real rows.
-// The president/officer/member roles come from club_members, the sponsor's from club_sponsors.
-export const DEMO_PERSONAS: Record<DemoPersona, any> = {
-  sponsor: demoUser("00000000-0000-0000-0000-000000000001", "test.sponsor@berkeleyprep.org", "Quincy Teacher", "sponsor", "", "Demo sponsor for Miku Club."),
-  president: demoUser("00000000-0000-0000-0000-000000000002", "test.president@berkeleyprep.org", "Gwen President", "student", "12", "Demo president of Miku Club."),
-  officer: demoUser("00000000-0000-0000-0000-000000000003", "test.member1@berkeleyprep.org", "Obyn Eleven", "student", "11", "Demo officer of Miku Club."),
-  member: demoUser("00000000-0000-0000-0000-000000000004", "test.member2@berkeleyprep.org", "Striker Ten", "student", "10", "Demo member of Miku Club."),
+// Their roles come from the rows in test-data.sql: the president, vp, officer and
+// member from club_members, the sponsor from club_sponsors, and the coordinator
+// from user_roles (they aren't in Miku Club at all).
+export const DEMO_PERSONA_EMAILS: Record<DemoPersona, string> = {
+  coordinator: "test.coordinator@berkeleyprep.org",
+  sponsor: "test.sponsor@berkeleyprep.org",
+  president: "test.president@berkeleyprep.org",
+  vp: "test.vp@berkeleyprep.org",
+  officer: "test.officer@berkeleyprep.org",
+  member: "test.member@berkeleyprep.org",
 }
 
-// Picks the demo user from NEXT_PUBLIC_DEMO_PERSONA (sponsor | president | officer | member).
-export function resolveDemoUser(persona: string | undefined): any {
-  if (persona && Object.prototype.hasOwnProperty.call(DEMO_PERSONAS, persona)) {
-    return DEMO_PERSONAS[persona as DemoPersona]
+// Picks demo user's email from NEXT_PUBLIC_DEMO_PERSONA = coordinator | sponsor | president | vp | officer | member
+// or sign in as any other user in the database via email
+export function resolveDemoEmail(persona: string | undefined): string {
+  const key = persona?.trim().toLowerCase()
+  if (key && Object.prototype.hasOwnProperty.call(DEMO_PERSONA_EMAILS, key)) {
+    return DEMO_PERSONA_EMAILS[key as DemoPersona]
+  }
+  if (key?.includes("@")) {
+    return key
   }
 
-  // Unset is fine (default to a plain member), but a set-and-wrong value is almost certainly a typo, so say so instead of silently logging you in as someone else.
+  // Unset: Fallback to Member
+  // Invalid Value: Notified
   if (persona) {
     console.warn(
-      `Unknown NEXT_PUBLIC_DEMO_PERSONA "${persona}". Use sponsor, president, officer or member. Falling back to member.`
+      `Unknown NEXT_PUBLIC_DEMO_PERSONA "${persona}". Use coordinator, sponsor, president, vp, officer, member, or a user's email. Falling back to member.`
     )
   }
-  return DEMO_PERSONAS.member
+  return DEMO_PERSONA_EMAILS.member
 }
 
-export const DEMO_USER: any = resolveDemoUser(process.env.NEXT_PUBLIC_DEMO_PERSONA)
+export const DEMO_EMAIL: string = resolveDemoEmail(process.env.NEXT_PUBLIC_DEMO_PERSONA)

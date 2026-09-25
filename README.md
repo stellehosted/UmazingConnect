@@ -1,83 +1,63 @@
 # BPS Compass
 
-A modern, simple club-organizing app for BPS: students can push updates, create club pages, manage leadership, and more...
-
-## Features
-
-### Current Implementation
-- **Microsoft Azure Authentication** - Secure login with school accounts only
-- **Profile Creation** - Students and sponsors can create detailed profiles
-- **Role-Based Permissions** - Different options for students, leadership, and presidents
-- **W UI** - Next.js, TypeScript, and Tailwind CSS
-- **Compatible Design** - Supports all devices
-
-### Planned Features
-- **Club Management** - Create, join, and manage school clubs
-- **Social Posts** - Share updates, events, and announcements
-- SOON **Event Management** - Create and RSVP to school events
-- SOON **Real-time Updates** - Live notifications and messaging
+A modern, simple club-organizing app for BPS: students can push updates, create club pages, manage leadership, and more
 
 ## Stack
-
 - **Frontend**: Next.js 15, React 19, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components
 - **Authentication**: Microsoft Azure AD (MSAL)
 - **State Management**: React Context API
 - **Deployment**: Vercel
 
+---
+# Local Development & Testing
 
-## Wanna try it yourself?
-
-### 1. Clone and Install
+## 1. Clone and Install
+```bash
+git clone https://github.com/stellehosted/bpscompass
 npm install
+```
 
-### 2. Quick Start (Demo Mode)
-
-For immediate testing without Azure setup:
+## 2. Make .env.local (Demo Mode; No Azure)
+Demo mode uses a local postgresql database and makes test users, clubs, posts and roles.
 
 ```bash
 # Create environment file
 cp env-template.txt .env.local
 
-# Edit .env.local and set:
+# In .env.local:
 NEXT_PUBLIC_DEMO_MODE=true
-
-# Start development server
-npm run dev
+NEXT_PUBLIC_DEMO_PERSONA="coordinator" | "sponsor" | "president" | "vp" | "officer" | "member"
 ```
 
-A demo user account will get you past Azure.
-
-### Local database (optional)
-
-Demo mode fakes the login but not the data, so clubs, posts and roles need a database. To run one locally:
-
+## 3. Make the local database
 ```bash
 # Install and start Postgres 15 (macOS)
 brew install postgresql@15
 brew services start postgresql@15
+
 # Homebrew doesn't add it to PATH: put this in ~/.zshrc
 export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
 
-# Create the database, apply the schema, and load test data in one step
-scripts/reset-db.sh
+# Runs script that resets database, applies schema, & loads test-data.sql
+bash scripts/reset-db.sh
 ```
 
-Then point `.env.local` at it (Homebrew's Postgres uses your macOS username, no password):
-
+## 4. Point `.env.local` at the database
 ```
 DATABASE_URL="postgresql://<your-mac-username>@localhost:5432/school_social_app"
 ```
 
-- `database/schema.sql` is the current schema. The admin tables live in `migrations/add_admin_system_tables.sql`, and the reset script applies both.
-- `database/test-data.sql` adds two clubs: a fully populated one (sponsor, president, officer, members, posts) and an empty one for testing empty states.
-- `scripts/reset-db.sh` **deletes** the target database first. It is for local development only.
-- To act as a seeded user (e.g. the sponsor), change that user's email in the database to your own `@berkeleyprep.org` address and log in through Azure.
+## 5. Run Development Server
+```bash
+npm run dev
+```
 
-More guides (security, admin system, deployment, Azure setup) are in `docs/`.
+## 6. Open [localhost:3000](http://localhost:3000)
 
-### 3. Azure Authentication Setup (dev)
+Additional guides & info in `docs/`
 
+---
+# Azure Authentication Setup (optional)
 1. **Go to Azure Portal**: https://portal.azure.com
 2. **Navigate to**: Azure Active Directory > App registrations
 3. **Create New Registration**:
@@ -93,56 +73,21 @@ More guides (security, admin system, deployment, Azure setup) are in `docs/`.
 NEXT_PUBLIC_AZURE_CLIENT_ID=your-client-id-here
 ```
 
-### 3. Run Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## User Creation
-
+---
+# User Creation
 1. **User visits app** → Redirected to profile creation (if not logged in)
 2. **Microsoft Login** → User authenticates with school Microsoft account
 3. **Domain Validation** → Only @berkeleyprep.org emails are accepted
 4. **Profile Creation** → User creates profile with role, grade, interests, etc.
 5. **Access Granted** → User can now access all app features
 
-## Roles
-
-### Member
-- Can join clubs and participate in activities
-- Grade level tracking
-- Interest-based recommendations
-
-### Vice President
-- Can manage club pages
-- Club verification capabilities
-- Edit specific club info
-
-### President
-- Full club edits
-- Highest control on leadership
-- Can revoke or transfer leadership
-
-## Contribute!
-
+---
+# Contribute!
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For support or questions:
-- Check the Azure configuration guide
-- Review the authentication flow documentation
-- Open an issue in the repository
+2. Make your changes
+3. Test thoroughly
+4. Submit a pull request
 
 ---
+# License
+This project is licensed under the MIT License - see the LICENSE file for details.
