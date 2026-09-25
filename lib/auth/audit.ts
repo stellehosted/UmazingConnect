@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 
-export type AuditTargetType = "post" | "club" | "user" | "report" | "leadership_request"
+export type AuditTargetType = "post" | "club" | "user" | "leadership_request"
 
 export interface AuditLogEntry {
   userId: string

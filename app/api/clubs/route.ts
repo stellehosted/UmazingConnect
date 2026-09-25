@@ -50,8 +50,7 @@ export async function GET(request: NextRequest) {
     const result = await pool.query(query, params)
 
     // If userId is provided, also check membership and sponsor status
-    // Skip for demo user (not a valid UUID)
-    if (userId && userId !== 'demo-user-123') {
+    if (userId) {
       // Check club memberships
       const membershipsQuery = `
         SELECT club_id, role FROM club_members WHERE user_id = $1
@@ -103,7 +102,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/clubs - Create a new club (admin only or for bulk import)
+// POST /api/clubs - Create a new club (used by the admin dashboard)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

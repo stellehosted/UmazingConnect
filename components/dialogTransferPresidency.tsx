@@ -51,6 +51,10 @@ export function TransferPresidencyDialog({
   // Filter out current user and get eligible members
   const eligibleMembers = members.filter(m => m.user_id !== currentUserId)
 
+  // Co-presidents can just step down; only the last president unclaims the club
+  const otherPresidents = members.filter(m => m.role === "president" && m.user_id !== currentUserId).length
+  const isLastPresident = otherPresidents === 0
+
   const handleTransfer = async () => {
     if (!selectedMember) {
       setError("Please select a new president")
@@ -87,7 +91,9 @@ export function TransferPresidencyDialog({
 
   const handleUnclaimAndLeave = async () => {
     if (!confirm(
-      `Are you sure you want to unclaim ${clubName} and leave? The club will become available for others to claim.`
+      isLastPresident
+        ? `Are you sure you want to unclaim ${clubName} and leave? The club will become available for others to claim.`
+        : `Are you sure you want to leave ${clubName}? The other ${otherPresidents === 1 ? "president stays" : "presidents stay"} in charge.`
     )) {
       return
     }
@@ -191,10 +197,13 @@ export function TransferPresidencyDialog({
 
           <div className="space-y-2">
             <h4 className="font-medium text-sm">
-              {eligibleMembers.length > 0 ? "Option 2: " : ""}Unclaim & Leave Club
+              {eligibleMembers.length > 0 ? "Option 2: " : ""}
+              {isLastPresident ? "Unclaim & Leave Club" : "Leave Club"}
             </h4>
             <p className="text-sm text-muted-foreground">
-              Unclaim the club and leave. The club will become available for others to claim.
+              {isLastPresident
+                ? "Unclaim the club and leave. The club will become available for others to claim."
+                : `Step down and leave the club. It stays claimed, since ${otherPresidents} other ${otherPresidents === 1 ? "president remains" : "presidents remain"}.`}
             </p>
             <Button
               onClick={handleUnclaimAndLeave}
@@ -202,7 +211,7 @@ export function TransferPresidencyDialog({
               variant="destructive"
               className="w-full"
             >
-              {loading ? "Leaving..." : "Unclaim & Leave Club"}
+              {loading ? "Leaving..." : isLastPresident ? "Unclaim & Leave Club" : "Leave Club"}
             </Button>
           </div>
         </div>

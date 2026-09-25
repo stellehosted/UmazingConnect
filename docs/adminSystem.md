@@ -9,11 +9,11 @@ This document outlines the specifications for implementing a multi-role admin sy
 
 ### User Roles Hierarchy
 
-**Super Admin / School Coordinator**
+**Admin Coordinators**
 - Full system access
 - Create and manage all clubs
 - Assign/remove sponsors from clubs
-- View all reports and moderate content
+- Moderate content (delete posts in any club)
 - Access admin dashboard and analytics
 - Manage user roles (promote coordinators, etc.)
 
@@ -46,18 +46,35 @@ This document outlines the specifications for implementing a multi-role admin sy
 
 ### Permission Matrix
 
-| Action | Member | Officer | President | Sponsor | Coordinator |
-|--------|--------|---------|-----------|---------|-------------|
-| Join club | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Create post | - | ✓ | ✓ | - | - |
-| Edit club info | - | - | ✓ | - | ✓ |
-| Add/remove members | - | - | ✓ | - | ✓ |
-| Promote to officer | - | - | ✓ (pending sponsor approval) | ✓ | ✓ |
-| Add/remove president | - | - | ✓ (pending sponsor approval) | ✓ | ✓ |
-| Delete posts | - | - | Own only | Any in club | Any |
-| View reports | - | - | - | Own clubs | All |
-| Create clubs | - | - | - | - | ✓ |
-| Assign sponsors | - | - | - | - | ✓ |
+The first seven rows are defined in code, in `lib/auth/permissions.ts`. Edit the map there and both the API and the club page pick it up. The remaining rows are still enforced by their own routes.
+
+Legend: ✓ allowed, - not allowed. **Enforced** says where the rule is checked: *server* (the API rejects it), *UI only* (the button is hidden but the API has no check), or *not built*.
+
+| Action | Member | Officer | Vice President | President | Sponsor | Coordinator | Enforced |
+|--------|--------|---------|----------------|-----------|---------|-------------|----------|
+| Create post | - | ✓ | ✓ | ✓ | ✓ | - | server |
+| Delete any post in the club | - | - | Own club | Own club | Own club | Any club | server |
+| Edit club info | - | - | ✓ | ✓ | ✓ | ✓ | server |
+| Manage tags | - | - | ✓ | ✓ | ✓ | ✓ | server |
+| Manage members (promote, demote, add officers/VPs) | - | - | - | ✓ | ✓ | ✓ | server |
+| Email all members | - | ✓ | ✓ | ✓ | ✓ | ✓ | UI only (mailto link) |
+| Join club | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | server |
+| Leave club | ✓ | ✓ | ✓ | Use Leave Presidency instead | Leave sponsorship instead | ✓ | server (blocks every president) |
+| Transfer or leave presidency (pick a successor by name) | - | - | - | ✓ (any president) | - | - | server |
+| Request a leadership change (needs sponsor approval) | - | - | - | ✓ | - | - | server (the Manage Members dialog currently skips this) |
+| Approve or reject leadership requests | - | - | - | - | Own club | Any club | server |
+| Claim or leave sponsorship | - | - | - | - | ✓ (verified teachers only) | - | server |
+| Kick members, remove presidents (admin dashboard) | - | - | - | - | - | ✓ | server |
+| Create clubs (admin dashboard) | - | - | - | - | - | ✓ | UI only |
+
+Notes:
+- Everyone can delete their own posts, whatever their role.
+- Club-scoped rows apply to the user's own club only, except for coordinators, who can act in any club.
+- Roles combine. A sponsor who also joined the club gets what both roles allow.
+- Sponsors and coordinators don't use the transfer flow. They add and remove presidents through Manage Members, which keeps the club's primary president (`clubs.president_id`) in sync with the actual presidents.
+- Coordinators aren't club members. They're recognized from `user_roles` or the `COORDINATOR_EMAILS` variable.
+- Not role-based: any signed-in user can claim an unclaimed club as its president (a confirmation checkbox is the only check), and any signed-in user can like posts.
+- Impersonation isn't handled yet. The API trusts the user ID the browser sends, so the "server" checks above can be bypassed by someone who knows another user's ID.
 
 ---
 
@@ -89,22 +106,6 @@ CREATE TABLE club_sponsors (
   UNIQUE(club_id, user_id)
 );
 
--- Post reports
-CREATE TABLE post_reports (
-  id TEXT PRIMARY KEY,
-  post_id TEXT NOT NULL,
-  reporter_id TEXT NOT NULL,
-  reason TEXT NOT NULL, -- 'inappropriate', 'spam', 'harassment', 'misinformation', 'other'
-  description TEXT,
-  status TEXT DEFAULT 'pending', -- 'pending', 'reviewing', 'resolved', 'dismissed'
-  reviewed_by TEXT,
-  reviewed_at TIMESTAMP,
-  resolution_note TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (post_id) REFERENCES posts(id),
-  FOREIGN KEY (reporter_id) REFERENCES users(id)
-);
-
 -- Leadership change requests (for sponsor approval)
 CREATE TABLE leadership_requests (
   id TEXT PRIMARY KEY,
@@ -129,7 +130,7 @@ CREATE TABLE audit_log (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
   action TEXT NOT NULL,
-  target_type TEXT NOT NULL, -- 'post', 'club', 'user', 'report'
+  target_type TEXT NOT NULL, -- 'post', 'club', 'user'
   target_id TEXT,
   details TEXT,
   ip_address TEXT,
@@ -163,21 +164,11 @@ CREATE TABLE audit_log (
 
 ---
 
-## 4. Content Moderation System
-
-### Post Reporting
-- Any logged-in user can report a post
-- Report reasons: Inappropriate Content, Spam, Harassment, Misinformation, Other
-- Optional description field
-- Reports visible to:
-  - Club sponsors (for their clubs)
-  - Coordinators (all reports)
+## 4. Content Moderation
 
 ### Moderation Actions
 - Hide post (soft delete, can be restored)
 - Delete post permanently
-- Dismiss report (mark as resolved, no action)
-- Add resolution notes
 
 ### No Pre-Approval Required
 - Posts publish immediately (no approval queue)
@@ -218,11 +209,9 @@ CREATE TABLE audit_log (
 - System statistics:
   - Total clubs, members, posts
   - Active users (last 7 days)
-  - Pending reports count
 - Quick actions:
   - Create new club
   - Assign sponsors
-  - View all reports
 - Recent activity feed
 
 ### Club Management (`/admin/clubs`)
@@ -233,12 +222,6 @@ CREATE TABLE audit_log (
 - Archive/delete clubs
 - View club analytics
 
-### Reports Queue (`/admin/reports`)
-- List all reports with filters (pending, resolved, dismissed)
-- Filter by club, reporter, date
-- Bulk actions (dismiss multiple)
-- Detailed report view with post preview
-
 ### User Management (`/admin/users`)
 - Search users
 - View user activity
@@ -247,7 +230,6 @@ CREATE TABLE audit_log (
 
 ### Sponsor Dashboard (`/sponsor`)
 - List of sponsored clubs
-- Reports from sponsored clubs
 - Pending leadership requests
 - Club analytics for sponsored clubs
 
@@ -260,22 +242,14 @@ CREATE TABLE audit_log (
 - `PUT /api/admin/clubs/[id]` - Edit any club (coordinator only)
 - `POST /api/admin/clubs/[id]/sponsor` - Assign sponsor (coordinator only)
 - `DELETE /api/admin/clubs/[id]/sponsor/[userId]` - Remove sponsor (coordinator only)
-- `GET /api/admin/reports` - Get all reports (coordinator only)
 - `GET /api/admin/stats` - Get system statistics (coordinator only)
 - `POST /api/admin/users/[id]/role` - Assign coordinator role (coordinator only)
 
 ### Sponsor Endpoints
 - `GET /api/sponsor/clubs` - Get sponsored clubs
-- `GET /api/sponsor/reports` - Get reports from sponsored clubs
 - `GET /api/sponsor/requests` - Get pending leadership requests
 - `POST /api/sponsor/requests/[id]/approve` - Approve leadership change
 - `POST /api/sponsor/requests/[id]/reject` - Reject leadership change
-
-### Report Endpoints
-- `POST /api/posts/[id]/report` - Report a post (any user)
-- `GET /api/reports/[id]` - Get report details (sponsor/coordinator)
-- `POST /api/reports/[id]/resolve` - Resolve report (sponsor/coordinator)
-- `POST /api/reports/[id]/dismiss` - Dismiss report (sponsor/coordinator)
 
 ### Leadership Request Endpoints
 - `POST /api/clubs/[id]/leadership/request` - Request leadership change (president)
@@ -293,11 +267,9 @@ CREATE TABLE audit_log (
 ### New Components
 - `dashboardAdmin.tsx` - Main admin dashboard
 - `admin-clubs-management.tsx` - Club management interface
-- `admin-reports-queue.tsx` - Reports moderation queue
 - `admin-user-management.tsx` - User role management
 - `dashboardSponsor.tsx` - Sponsor overview
 - `sponsor-requests-queue.tsx` - Leadership approval queue
-- `report-post-dialog.tsx` - Post reporting dialog
 - `leadership-request-dialog.tsx` - Request leadership change
 - `approve-request-dialog.tsx` - Approve/reject leadership request
 
@@ -321,7 +293,6 @@ AZURE_AD_CLIENT_ID=your-client-id
 AZURE_AD_CLIENT_SECRET=your-client-secret
 
 # Feature flags
-ENABLE_REPORTING=true
 ENABLE_SPONSOR_APPROVAL=true
 ```
 
@@ -330,7 +301,7 @@ ENABLE_SPONSOR_APPROVAL=true
 ## 10. Implementation Phases
 
 ### Phase 1: Foundation (Current Task)
-- Add database tables (user_roles, club_sponsors, post_reports, leadership_requests, audit_log)
+- Add database tables (user_roles, club_sponsors, leadership_requests, audit_log)
 - Create helper functions to check user roles
 - Add middleware for role-based access control
 
@@ -344,18 +315,13 @@ ENABLE_SPONSOR_APPROVAL=true
 - Create sponsor dashboard
 - Build leadership request approval workflow
 
-### Phase 4: Reporting System
-- Add report post functionality
-- Create reports queue for sponsors/coordinators
-- Implement moderation actions
-
-### Phase 5: Admin Panel
+### Phase 4: Admin Panel
 - Build coordinator dashboard
 - Create club management interface
 - Add user management features
 - Implement analytics
 
-### Phase 6: Polish & Testing
+### Phase 5: Polish & Testing
 - Audit logging for all admin actions
 - Email notifications (optional)
 - Performance optimization
@@ -367,7 +333,6 @@ ENABLE_SPONSOR_APPROVAL=true
 
 - Role checks on all protected endpoints
 - Input validation on all admin actions
-- Rate limiting on reporting (prevent spam)
 - Audit trail for all moderation actions
 - SQL injection prevention (parameterized queries)
 - XSS prevention (sanitize user input)
@@ -382,4 +347,4 @@ ENABLE_SPONSOR_APPROVAL=true
 - **Sponsors verified by:** Azure AD userType field
 - **Initial coordinators:** Set via environment variable
 - **Multiple presidents:** All have equal permissions
-- **Moderation:** Reactive (reports), not proactive (approval queues)
+- **Moderation:** Reactive, not proactive (approval queues)

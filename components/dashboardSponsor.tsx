@@ -13,7 +13,6 @@ interface SponsoredClub {
   image_url: string | null
   member_count: number
   pending_requests: number
-  pending_reports: number
   sponsor_since: string
 }
 
@@ -125,7 +124,7 @@ export function SponsorDashboard({ userId }: { userId: string }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -139,16 +138,6 @@ export function SponsorDashboard({ userId }: { userId: string }) {
             <div className="text-center">
               <p className="text-3xl font-bold">{requests.length}</p>
               <p className="text-sm text-muted-foreground">Pending Requests</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold">
-                {clubs.reduce((sum, club) => sum + club.pending_reports, 0)}
-              </p>
-              <p className="text-sm text-muted-foreground">Pending Reports</p>
             </div>
           </CardContent>
         </Card>
@@ -251,11 +240,6 @@ export function SponsorDashboard({ userId }: { userId: string }) {
                               <Badge variant="outline" className="text-xs">
                                 <AlertCircle className="h-3 w-3 mr-1" />
                                 {club.pending_requests} requests
-                              </Badge>
-                            )}
-                            {club.pending_reports > 0 && (
-                              <Badge variant="destructive" className="text-xs">
-                                {club.pending_reports} reports
                               </Badge>
                             )}
                           </div>

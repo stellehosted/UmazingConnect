@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     // Check which posts user has liked
     let posts = postsResult.rows
-    if (userId && posts.length > 0 && userId !== 'demo-user-123') {
+    if (userId && posts.length > 0) {
       const postIds = posts.map((p: any) => p.id)
       const likesQuery = `
         SELECT post_id FROM post_likes 

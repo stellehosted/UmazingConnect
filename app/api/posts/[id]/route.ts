@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
 import { supabase } from '@/lib/supabase'
-import { isCoordinator } from '@/lib/auth/roles'
+import { hasClubPermission } from '@/lib/auth/club-permissions'
 
-// DELETE /api/posts/[id] - Delete a post (author, club leadership, or coordinator)
+// DELETE /api/posts/[id] - Delete a post (its author, or anyone with the deleteAnyPost permission)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -12,7 +12,6 @@ export async function DELETE(
     const { id: postId } = await params
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
-    const isAdmin = searchParams.get('isAdmin') === 'true'
 
     if (!userId) {
       return NextResponse.json(
@@ -37,25 +36,10 @@ export async function DELETE(
     // Check if user is the post author
     const isAuthor = post.user_id === userId
 
-    // Check if user is a coordinator (admin)
-    let isCoord = false
-    if (isAdmin) {
-      isCoord = await isCoordinator(userId)
-    }
-
-    // Check if user is club leadership (president, vice_president, or officer)
-    const leadershipQuery = `
-      SELECT role FROM club_members
-      WHERE club_id = $1 AND user_id = $2
-      AND role IN ('president', 'vice_president', 'officer')
-    `
-    const leadershipResult = await pool.query(leadershipQuery, [post.club_id, userId])
-    const isLeadership = leadershipResult.rows.length > 0
-
-    // User must be either the author, club leadership, or coordinator
-    if (!isAuthor && !isLeadership && !isCoord) {
+    // Everyone else needs the deleteAnyPost permission in this post's club
+    if (!isAuthor && !(await hasClubPermission(userId, post.club_id, 'deleteAnyPost'))) {
       return NextResponse.json(
-        { success: false, error: 'Only the post author, club leadership, or coordinators can delete this post' },
+        { success: false, error: "Only the post's author or club leadership can delete this post" },
         { status: 403 }
       )
     }

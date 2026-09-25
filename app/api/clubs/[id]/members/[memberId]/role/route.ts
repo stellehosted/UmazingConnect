@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { requireClubPermission } from '@/lib/auth/club-permissions'
+import { syncPrimaryPresident } from '@/lib/club-president'
 
 // PUT /api/clubs/[id]/members/[memberId]/role - Update member role
 export async function PUT(
@@ -27,46 +29,17 @@ export async function PUT(
       )
     }
 
-    // Verify the updater is a president or sponsor of the club
-    const [presidentResult, sponsorResult] = await Promise.all([
-      pool.query(
-        `SELECT role FROM club_members WHERE club_id = $1 AND user_id = $2 AND role = 'president'`,
-        [clubId, updatedBy]
-      ),
-      pool.query(
-        `SELECT id FROM club_sponsors WHERE club_id = $1 AND user_id = $2 AND status = 'active'`,
-        [clubId, updatedBy]
-      ),
-    ])
-
-    if (presidentResult.rows.length === 0 && sponsorResult.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Only club presidents or sponsors can update member roles' },
-        { status: 403 }
-      )
-    }
+    const denied = await requireClubPermission(updatedBy, clubId, 'manageMembers')
+    if (denied) return denied
 
     // Update member role (supports multiple presidents - co-presidency)
     await pool.query(
       'UPDATE club_members SET role = $1 WHERE club_id = $2 AND user_id = $3',
       [role, clubId, memberId]
     )
-    
-    // If promoting to president and this is the first president, update club's president_id
-    if (role === 'president') {
-      const currentPresidentCheck = await pool.query(
-        'SELECT president_id FROM clubs WHERE id = $1',
-        [clubId]
-      )
-      
-      // Only update president_id if it's not set (first president)
-      if (!currentPresidentCheck.rows[0].president_id) {
-        await pool.query(
-          'UPDATE clubs SET president_id = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-          [memberId, clubId]
-        )
-      }
-    }
+
+    // Promoting or demoting can change who the presidents are
+    await syncPrimaryPresident(clubId)
 
     return NextResponse.json({
       success: true,

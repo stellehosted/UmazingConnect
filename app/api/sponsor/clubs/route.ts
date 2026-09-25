@@ -20,10 +20,7 @@ export async function GET(request: NextRequest) {
         c.*,
         cs.assigned_at as sponsor_since,
         (SELECT COUNT(*) FROM club_members WHERE club_id = c.id) as member_count,
-        (SELECT COUNT(*) FROM leadership_requests WHERE club_id = c.id AND status = 'pending') as pending_requests,
-        (SELECT COUNT(*) FROM post_reports pr 
-         JOIN posts p ON pr.post_id = p.id 
-         WHERE p.club_id = c.id AND pr.status = 'pending') as pending_reports
+        (SELECT COUNT(*) FROM leadership_requests WHERE club_id = c.id AND status = 'pending') as pending_requests
       FROM club_sponsors cs
       JOIN clubs c ON cs.club_id = c.id
       WHERE cs.user_id = $1 AND cs.status = 'active'

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { requireClubPermission } from '@/lib/auth/club-permissions'
 
-// PUT /api/clubs/[id]/update - Update club information (leadership only)
+// PUT /api/clubs/[id]/update - Update club information (needs the editClub permission)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -9,7 +10,10 @@ export async function PUT(
   try {
     const { id: clubId } = await params
     const body = await request.json()
-    const { description, category, meetingTime, location, imageUrl } = body
+    const { description, category, meetingTime, location, imageUrl, userId } = body
+
+    const denied = await requireClubPermission(userId, clubId, 'editClub')
+    if (denied) return denied
 
     // Validate required fields
     if (!description || !category) {

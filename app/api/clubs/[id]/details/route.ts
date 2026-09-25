@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { isCoordinator } from '@/lib/auth/roles'
+import { permissionsForRoles, rolesFor } from '@/lib/auth/permissions'
 
 // GET /api/clubs/[id]/details - Get complete club details including members and posts
 export async function GET(
@@ -145,15 +147,18 @@ export async function GET(
     // Check if current user is a member and their role, and if they are a sponsor
     let userMembership = null
     let userIsSponsor = false
+    let userIsCoordinator = false
     if (userId) {
-      const [membershipResult, sponsorResult] = await Promise.all([
+      const [membershipResult, sponsorResult, coordinator] = await Promise.all([
         pool.query(`SELECT role FROM club_members WHERE club_id = $1 AND user_id = $2`, [clubId, userId]),
         pool.query(`SELECT id FROM club_sponsors WHERE club_id = $1 AND user_id = $2 AND status = 'active'`, [clubId, userId]),
+        isCoordinator(userId),
       ])
       if (membershipResult.rows.length > 0) {
         userMembership = membershipResult.rows[0].role
       }
       userIsSponsor = sponsorResult.rows.length > 0
+      userIsCoordinator = coordinator
     }
 
     return NextResponse.json({
@@ -165,6 +170,10 @@ export async function GET(
           is_joined: userMembership !== null,
           memberRole: userMembership,
           is_sponsor: userIsSponsor,
+          // What this viewer may do here; the page shows buttons from this list
+          permissions: permissionsForRoles(
+            rolesFor({ memberRole: userMembership, isSponsor: userIsSponsor, isCoordinator: userIsCoordinator })
+          ),
         },
         members: membersResult.rows,
         posts: postsResult.rows,

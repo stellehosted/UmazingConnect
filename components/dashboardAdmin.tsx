@@ -218,7 +218,7 @@ export function AdminDashboard({ userId }: { userId: string }) {
     setDeletingPost(true)
     try {
       const response = await fetch(
-        `/api/posts/${postToDelete.id}?userId=${userId}&isAdmin=true`,
+        `/api/posts/${postToDelete.id}?userId=${userId}`,
         { method: "DELETE" }
       )
 

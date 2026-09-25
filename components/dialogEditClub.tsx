@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Settings, Upload, X } from "lucide-react"
 import { ImageCropDialog } from "./dialogImageCrop"
+import { useAuth } from "@/contexts/auth-context"
 
 interface EditClubDialogProps {
   clubId: string
@@ -38,6 +39,7 @@ export const EditClubDialog = memo(function EditClubDialog({
   currentImageUrl,
   onUpdateSuccess,
 }: EditClubDialogProps) {
+  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const [description, setDescription] = useState("")
   const [category, setCategory] = useState("")
@@ -159,6 +161,7 @@ export const EditClubDialog = memo(function EditClubDialog({
           meetingTime: meetingTime || null,
           location: location || null,
           imageUrl: finalImageUrl || null,
+          userId: user?.id,
         }),
       })
 
@@ -175,7 +178,7 @@ export const EditClubDialog = memo(function EditClubDialog({
     } finally {
       setLoading(false)
     }
-  }, [clubId, description, category, meetingTime, location, imageUrl, selectedImage, onUpdateSuccess])
+  }, [clubId, description, category, meetingTime, location, imageUrl, selectedImage, onUpdateSuccess, user?.id])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

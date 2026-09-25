@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { requireClubPermission } from '@/lib/auth/club-permissions'
+import { syncPrimaryPresident } from '@/lib/club-president'
 
 // POST /api/clubs/[id]/members/add-leader - Add a leader by email
 export async function POST(
@@ -27,31 +29,16 @@ export async function POST(
       )
     }
 
-    // Verify the adder is the president or a sponsor of the club
-    const [presidentResult, sponsorResult] = await Promise.all([
-      pool.query('SELECT president_id FROM clubs WHERE id = $1', [clubId]),
-      pool.query(
-        `SELECT id FROM club_sponsors WHERE club_id = $1 AND user_id = $2 AND status = 'active'`,
-        [clubId, addedBy]
-      ),
-    ])
-
-    if (presidentResult.rows.length === 0) {
+    const clubCheck = await pool.query('SELECT id FROM clubs WHERE id = $1', [clubId])
+    if (clubCheck.rows.length === 0) {
       return NextResponse.json(
         { success: false, error: 'Club not found' },
         { status: 404 }
       )
     }
 
-    const isPresident = presidentResult.rows[0].president_id === addedBy
-    const isSponsor = sponsorResult.rows.length > 0
-
-    if (!isPresident && !isSponsor) {
-      return NextResponse.json(
-        { success: false, error: 'Only the club president or sponsors can add leaders' },
-        { status: 403 }
-      )
-    }
+    const denied = await requireClubPermission(addedBy, clubId, 'manageMembers')
+    if (denied) return denied
 
     // Find user by email
     const userQuery = 'SELECT id FROM users WHERE email = $1'
@@ -83,6 +70,9 @@ export async function POST(
         [clubId, userId, role]
       )
     }
+
+    // Re-assigning an existing president to officer/VP changes who the presidents are
+    await syncPrimaryPresident(clubId)
 
     return NextResponse.json({
       success: true,

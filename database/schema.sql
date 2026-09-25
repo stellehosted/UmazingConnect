@@ -4,7 +4,7 @@
 --   psql school_social_app -f database/schema.sql
 --   psql school_social_app -f migrations/add_admin_system_tables.sql
 --
--- The admin tables (user_roles, club_sponsors, post_reports, leadership_requests,
+-- The admin tables (user_roles, club_sponsors, leadership_requests,
 -- audit_log, users.user_type) are NOT here. They live in
 -- migrations/add_admin_system_tables.sql, which app/api/admin/migrate/route.ts also
 -- reads by path, so it stays the single copy. Apply it after this file.

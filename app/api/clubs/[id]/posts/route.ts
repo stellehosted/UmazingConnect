@@ -3,6 +3,7 @@ import pool from '@/lib/db'
 import { checkPostRateLimit } from '@/lib/security/input-validator'
 import { getClientIdentifier } from '@/lib/security/api-middleware'
 import { createNotificationsForClubMembers } from '@/lib/services/notifications'
+import { requireClubPermission } from '@/lib/auth/club-permissions'
 
 // GET /api/clubs/[id]/posts - Get all posts for a club
 export async function GET(
@@ -32,7 +33,7 @@ export async function GET(
 
     // Check which posts user has liked
     let posts = result.rows
-    if (userId && posts.length > 0 && userId !== 'demo-user-123') {
+    if (userId && posts.length > 0) {
       const postIds = posts.map((p: any) => p.id)
       const likesQuery = `
         SELECT post_id FROM post_likes 
@@ -124,18 +125,8 @@ export async function POST(
       )
     }
 
-    // Verify user is a member OR sponsor of the club
-    const [memberCheck, sponsorCheck] = await Promise.all([
-      pool.query('SELECT id FROM club_members WHERE club_id = $1 AND user_id = $2', [clubId, userId]),
-      pool.query("SELECT id FROM club_sponsors WHERE club_id = $1 AND user_id = $2 AND status = 'active'", [clubId, userId]),
-    ])
-
-    if (memberCheck.rows.length === 0 && sponsorCheck.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Only club members can post' },
-        { status: 403 }
-      )
-    }
+    const denied = await requireClubPermission(userId, clubId, 'post')
+    if (denied) return denied
 
     // Create post
     const insertQuery = `

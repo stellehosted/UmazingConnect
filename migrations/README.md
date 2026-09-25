@@ -7,9 +7,8 @@ This migration adds the necessary tables for the multi-role admin system.
 ### Tables Added:
 1. `user_roles` - Global coordinator roles
 2. `club_sponsors` - Teacher/sponsor assignments to clubs
-3. `post_reports` - User-reported posts for moderation
-4. `leadership_requests` - Pending leadership changes requiring sponsor approval
-5. `audit_log` - Audit trail for admin actions
+3. `leadership_requests` - Pending leadership changes requiring sponsor approval
+4. `audit_log` - Audit trail for admin actions
 
 ### Running the Migration
 
@@ -50,7 +49,6 @@ To rollback this migration:
 ```sql
 DROP TABLE IF EXISTS audit_log;
 DROP TABLE IF EXISTS leadership_requests;
-DROP TABLE IF EXISTS post_reports;
 DROP TABLE IF EXISTS club_sponsors;
 DROP TABLE IF EXISTS user_roles;
 ALTER TABLE users DROP COLUMN IF EXISTS user_type;

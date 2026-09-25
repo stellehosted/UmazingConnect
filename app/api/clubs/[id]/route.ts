@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { requireClubPermission } from '@/lib/auth/club-permissions'
 
 // GET /api/clubs/[id] - Get a specific club with details
 export async function GET(
@@ -80,9 +81,7 @@ export async function PUT(
       )
     }
 
-    // Check if user is president
-    const checkQuery = 'SELECT president_id FROM clubs WHERE id = $1'
-    const clubCheck = await pool.query(checkQuery, [clubId])
+    const clubCheck = await pool.query('SELECT id FROM clubs WHERE id = $1', [clubId])
 
     if (clubCheck.rows.length === 0) {
       return NextResponse.json(
@@ -91,12 +90,8 @@ export async function PUT(
       )
     }
 
-    if (clubCheck.rows[0].president_id !== userId) {
-      return NextResponse.json(
-        { success: false, error: 'Only the president can update club details' },
-        { status: 403 }
-      )
-    }
+    const denied = await requireClubPermission(userId, clubId, 'editClub')
+    if (denied) return denied
 
     // Build update query dynamically
     const updates: string[] = []

@@ -8,15 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Users,
@@ -34,10 +25,10 @@ import {
   Grid3X3,
 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
-import { AdminClubImport } from "./adminClubImport"
 import { ClaimClubDialog } from "./dialogClaimClub"
 import { ClaimSponsorDialog } from "./dialogClaimSponsor"
 import { CreatePostDialog } from "./dialogCreatePost"
+import { permissionsForRoles, rolesFor } from "@/lib/auth/permissions"
 
 interface Club {
   id: string
@@ -82,11 +73,7 @@ export function ClubsContent() {
   const [clubs, setClubs] = useState<Club[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
-  const [selectedClub, setSelectedClub] = useState<Club | null>(null)
-  const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false)
-  const [transferUserId, setTransferUserId] = useState("")
   const [loading, setLoading] = useState(true)
-  const [showAdmin, setShowAdmin] = useState(false)
 
   // Load clubs from API
   const loadClubs = useCallback(async () => {
@@ -165,34 +152,6 @@ export function ClubsContent() {
       alert("Failed to leave sponsorship. Please try again.")
     }
   }, [user?.id, loadClubs])
-
-  const handleTransferPresidency = useCallback(async () => {
-    if (!selectedClub || !transferUserId || !user?.id) return
-
-    try {
-      const response = await fetch(`/api/clubs/${selectedClub.id}/transfer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fromUserId: user.id,
-          toUserId: transferUserId,
-        }),
-      })
-
-      if (response.ok) {
-        setIsTransferDialogOpen(false)
-        setTransferUserId("")
-        await loadClubs()
-        alert("Presidency transferred successfully!")
-      } else {
-        const data = await response.json()
-        alert(data.error || "Failed to transfer presidency")
-      }
-    } catch (error) {
-      console.error("Error transferring presidency:", error)
-      alert("Failed to transfer presidency. Please try again.")
-    }
-  }, [selectedClub, transferUserId, user?.id, loadClubs])
 
   const filteredClubs = useMemo(() => {
     return clubs
@@ -398,53 +357,15 @@ export function ClubsContent() {
               <>
                 {user?.id && (club.is_joined || club.is_sponsor) && (
                   <div className="flex gap-2">
-                    <CreatePostDialog
-                      clubId={club.id}
-                      clubName={club.name}
-                      userId={user.id}
-                      onPostCreated={loadClubs}
-                    />
-
-                    {club.memberRole === "president" && (
-                      <Dialog
-                        open={isTransferDialogOpen && selectedClub?.id === club.id}
-                        onOpenChange={(open) => {
-                          setIsTransferDialogOpen(open)
-                          if (open) setSelectedClub(club)
-                          else {
-                            setSelectedClub(null)
-                            setTransferUserId("")
-                          }
-                        }}
-                      >
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="icon" title="Transfer Presidency">
-                            <Crown className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle className="font-bold">Transfer Presidency</DialogTitle>
-                            <DialogDescription>
-                              Transfer club presidency to another member by their user ID
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="transfer-user-id" className="font-bold text-xs">User ID</Label>
-                              <Input
-                                id="transfer-user-id"
-                                placeholder="Enter user ID to transfer to"
-                                value={transferUserId}
-                                onChange={(e) => setTransferUserId(e.target.value)}
-                              />
-                            </div>
-                            <Button onClick={handleTransferPresidency} className="w-full" disabled={!transferUserId}>
-                              Transfer
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                    {permissionsForRoles(
+                      rolesFor({ memberRole: club.memberRole, isSponsor: club.is_sponsor })
+                    ).includes("post") && (
+                      <CreatePostDialog
+                        clubId={club.id}
+                        clubName={club.name}
+                        userId={user.id}
+                        onPostCreated={loadClubs}
+                      />
                     )}
                   </div>
                 )}
@@ -496,26 +417,7 @@ export function ClubsContent() {
           Discover and join clubs, or claim an unclaimed club to become its president.
         </p>
         <div className="w-24 h-1 bg-secondary mx-auto" />
-
-        {user?.role === "admin" && (
-          <div className="pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAdmin(!showAdmin)}
-              className="text-xs sm:text-sm"
-            >
-              {showAdmin ? "Hide" : "Show"} Admin
-            </Button>
-          </div>
-        )}
       </div>
-
-      {showAdmin && user?.role === "admin" && (
-        <div className="mb-8">
-          <AdminClubImport />
-        </div>
-      )}
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="grid w-full grid-cols-3 h-auto bg-muted p-1">

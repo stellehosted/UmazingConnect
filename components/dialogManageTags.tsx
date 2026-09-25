@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tag, X } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
 
 interface ManageTagsDialogProps {
   clubId: string
@@ -28,6 +29,7 @@ export const ManageTagsDialog = memo(function ManageTagsDialog({
   currentTags,
   onUpdateSuccess,
 }: ManageTagsDialogProps) {
+  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState("")
@@ -66,7 +68,7 @@ export const ManageTagsDialog = memo(function ManageTagsDialog({
       const response = await fetch(`/api/clubs/${clubId}/tags`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tags }),
+        body: JSON.stringify({ tags, userId: user?.id }),
       })
 
       if (response.ok) {
@@ -82,7 +84,7 @@ export const ManageTagsDialog = memo(function ManageTagsDialog({
     } finally {
       setLoading(false)
     }
-  }, [clubId, tags, onUpdateSuccess])
+  }, [clubId, tags, onUpdateSuccess, user?.id])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

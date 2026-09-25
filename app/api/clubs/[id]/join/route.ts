@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db'
+import { isPresidentOfClub } from '@/lib/auth/roles'
 
 // POST /api/clubs/[id]/join - Join a club
 export async function POST(
@@ -89,8 +90,7 @@ export async function DELETE(
       )
     }
 
-    // Check if user is president
-    const clubQuery = 'SELECT president_id FROM clubs WHERE id = $1'
+    const clubQuery = 'SELECT id FROM clubs WHERE id = $1'
     const clubResult = await pool.query(clubQuery, [clubId])
 
     if (clubResult.rows.length === 0) {
@@ -100,9 +100,10 @@ export async function DELETE(
       )
     }
 
-    if (clubResult.rows[0].president_id === userId) {
+    // Any president (not just the primary one) has to use Leave Presidency instead
+    if (await isPresidentOfClub(userId, clubId)) {
       return NextResponse.json(
-        { success: false, error: 'President cannot leave club. Transfer presidency first.' },
+        { success: false, error: 'Presidents cannot leave the club directly. Use Leave Presidency instead.' },
         { status: 403 }
       )
     }
