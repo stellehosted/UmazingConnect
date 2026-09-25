@@ -34,6 +34,8 @@ interface TransferPresidencyDialogProps {
   members: Member[]
   currentUserId: string
   onSuccess: () => void
+  // Replaces the default "Leave Presidency" button, e.g. the club page's "Leave".
+  trigger?: React.ReactNode
 }
 
 export function TransferPresidencyDialog({
@@ -42,6 +44,7 @@ export function TransferPresidencyDialog({
   members,
   currentUserId,
   onSuccess,
+  trigger,
 }: TransferPresidencyDialogProps) {
   const [open, setOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<string>("")
@@ -129,10 +132,12 @@ export function TransferPresidencyDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Crown className="h-4 w-4" />
-          Leave Presidency
-        </Button>
+        {trigger ?? (
+          <Button variant="outline" size="sm" className="gap-2">
+            <Crown className="h-4 w-4" />
+            Leave Presidency
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>

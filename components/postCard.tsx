@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Heart, ThumbsUp, ThumbsDown, Forward } from "lucide-react"
+import { Heart, ThumbsUp, ThumbsDown, Forward, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { renderTextWithLinks } from "@/lib/render-text-with-links"
 
@@ -12,6 +12,7 @@ export interface ClubPost {
   club_name?: string
   club_avatar?: string
   title?: string | null
+  author_id?: string
   author_name: string
   author_avatar: string | null
   author_email: string
@@ -60,9 +61,12 @@ async function sharePost(post: ClubPost) {
 export function PostCard({
   post,
   onLike,
+  onDelete,
 }: {
   post: ClubPost
   onLike: (postId: string, isLiked: boolean) => void
+  // Only passed where the viewer may moderate (club leadership on the club page).
+  onDelete?: (postId: string) => void
 }) {
   const [rsvp, setRsvp] = useState<Rsvp>(null)
 
@@ -148,15 +152,28 @@ export function PostCard({
             </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => sharePost(post)}
-            title="Share"
-            className="h-9 px-2 hover:bg-secondary/20"
-          >
-            <Forward className="h-4 w-4" strokeWidth={2.5} />
-          </Button>
+          <div className="flex items-center gap-2">
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(post.id)}
+                title="Delete post"
+                className="h-9 px-2 text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => sharePost(post)}
+              title="Share"
+              className="h-9 px-2 hover:bg-secondary/20"
+            >
+              <Forward className="h-4 w-4" strokeWidth={2.5} />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

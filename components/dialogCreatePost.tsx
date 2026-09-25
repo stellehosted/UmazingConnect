@@ -22,6 +22,8 @@ interface CreatePostDialogProps {
   clubName: string
   userId: string
   onPostCreated?: () => void
+  // Replaces the default "Post" button, e.g. the club page's "Post!" button.
+  trigger?: React.ReactNode
 }
 
 export const CreatePostDialog = memo(function CreatePostDialog({
@@ -29,6 +31,7 @@ export const CreatePostDialog = memo(function CreatePostDialog({
   clubName,
   userId,
   onPostCreated,
+  trigger,
 }: CreatePostDialogProps) {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState("")
@@ -224,11 +227,13 @@ export const CreatePostDialog = memo(function CreatePostDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
-          <MessageSquare className="h-4 w-4 mr-2" />
-          <span className="hidden xs:inline">Post</span>
-          <span className="xs:hidden">Post</span>
-        </Button>
+        {trigger ?? (
+          <Button variant="outline" className="w-full">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            <span className="hidden xs:inline">Post</span>
+            <span className="xs:hidden">Post</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full" onClick={(e) => e.stopPropagation()}>
         <DialogHeader>

@@ -12,7 +12,6 @@
 - Needs a process for club mentors to approve the claiming of the club, 
 - Guessing that this needs an option for the club sponsor to have controls over leadership appointment. 
 
-- manage members/leadership label in club details button
 - Filter club feed to just your clubs
 - Attending/not attending text next to icons
 - remove unclaimed, swap my/all clubs

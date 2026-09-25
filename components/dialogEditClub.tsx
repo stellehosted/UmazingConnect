@@ -27,6 +27,10 @@ interface EditClubDialogProps {
   currentLocation: string | null
   currentImageUrl: string | null
   onUpdateSuccess: () => void
+  // Replaces the default "Edit Club Info" button, e.g. the club page's "Edit".
+  trigger?: React.ReactNode
+  // Extra management actions (Manage Members / Manage Tags) shown above the form.
+  children?: React.ReactNode
 }
 
 export const EditClubDialog = memo(function EditClubDialog({
@@ -38,6 +42,8 @@ export const EditClubDialog = memo(function EditClubDialog({
   currentLocation,
   currentImageUrl,
   onUpdateSuccess,
+  trigger,
+  children,
 }: EditClubDialogProps) {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
@@ -183,16 +189,20 @@ export const EditClubDialog = memo(function EditClubDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
-          <Settings className="h-4 w-4 mr-2" />
-          Edit Club Info
-        </Button>
+        {trigger ?? (
+          <Button variant="outline" className="w-full">
+            <Settings className="h-4 w-4 mr-2" />
+            Edit Club Info
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[calc(100vw-2rem)] sm:w-full">
         <DialogHeader>
           <DialogTitle className="text-base sm:text-lg">Edit {clubName}</DialogTitle>
           <DialogDescription className="text-xs sm:text-sm">Update club information and details</DialogDescription>
         </DialogHeader>
+
+        {children && <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">{children}</div>}
 
         <div className="space-y-3 sm:space-y-4">
           {/* Description */}

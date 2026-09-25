@@ -2,34 +2,32 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import localFont from "next/font/local"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import {
-  Users,
-  Calendar,
-  MapPin,
-  ArrowLeft,
-  Crown,
-  Shield,
-  UserCog,
-  MessageSquare,
-  Palette,
-  Gamepad2,
-  BookOpen,
-  Trophy,
-  Heart,
-  Code,
-  Trash2,
-} from "lucide-react"
+import { Calendar, MapPin, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
+import { formatDisplayName } from "@/lib/utils"
+import type { Permission } from "@/lib/auth/permissions"
 import { ManageLeadershipDialog } from "./dialogManageLeadership"
 import { EditClubDialog } from "./dialogEditClub"
 import { ManageTagsDialog } from "./dialogManageTags"
 import { TransferPresidencyDialog } from "./dialogTransferPresidency"
 import { CreatePostDialog } from "./dialogCreatePost"
-import { renderTextWithLinks } from "@/lib/render-text-with-links"
+import { PostCard, type ClubPost } from "./postCard"
+
+const berkeley = localFont({
+  src: "../fonts/BerkeleyStd-Black.otf",
+  weight: "900",
+  display: "swap",
+})
+
+// Layout follows the "Club Details (Desktop)" frame in The Compass.sketch.
+// That frame is drawn at 1.5x (its buttons are 1.5x instances of the 150x48
+// button symbols, which Button's h-12 matches), so every Sketch value below
+// was divided by 1.5 and snapped to the nearest Tailwind step.
+
+// Buttons are 150x48 in the Button symbols; the height comes from size="default".
+const ACTION_BUTTON = "min-w-[150px]"
 
 interface ClubMember {
   id: string
@@ -39,15 +37,6 @@ interface ClubMember {
   name: string
   email: string
   avatar_url: string | null
-}
-
-interface ClubPost {
-  id: string
-  content: string
-  image_url: string | null
-  created_at: string
-  author_name: string
-  author_avatar: string | null
 }
 
 interface President {
@@ -77,6 +66,7 @@ interface Club {
   is_joined: boolean
   is_claimed: boolean
   is_sponsor: boolean
+  permissions: Permission[]
   president_name: string | null
   president_avatar: string | null
   president_email: string | null
@@ -86,30 +76,26 @@ interface Club {
   memberRole: string | null
 }
 
-const categoryIcons = {
-  academic: BookOpen,
-  arts: Palette,
-  sports: Trophy,
-  technology: Code,
-  service: Heart,
-  hobby: Gamepad2,
+const LEADERSHIP_ROLES = ["president", "vice_president", "officer"]
+
+function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-2xl font-black">{title}</h2>
+      {children}
+    </section>
+  )
 }
 
-const categoryColors = {
-  academic: "bg-blue-100 text-blue-800",
-  arts: "bg-purple-100 text-purple-800",
-  sports: "bg-green-100 text-green-800",
-  technology: "bg-orange-100 text-orange-800",
-  service: "bg-red-100 text-red-800",
-  hobby: "bg-sky-100 text-sky-800",
-}
-
-const roleIcons = {
-  sponsor: Shield,
-  president: Crown,
-  vice_president: Shield,
-  officer: UserCog,
-  member: Users,
+function PersonWithEmail({ name, email }: { name: string; email: string }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-base truncate">{formatDisplayName(name)}</p>
+      <p className="text-xs italic text-black/50 truncate" title={email}>
+        {email}
+      </p>
+    </div>
+  )
 }
 
 export function ClubDetailPage({ clubId }: { clubId: string }) {
@@ -126,14 +112,19 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
       const url = user?.id
         ? `/api/clubs/${clubId}/details?userId=${user.id}`
         : `/api/clubs/${clubId}/details`
-      
+
       const response = await fetch(url)
-      
+
       if (response.ok) {
         const result = await response.json()
         setClub(result.data.club)
         setMembers(result.data.members)
-        setPosts(result.data.posts)
+        setPosts(
+          result.data.posts.map((post: ClubPost) => ({
+            ...post,
+            author_name: formatDisplayName(post.author_name),
+          }))
+        )
       } else {
         const errorData = await response.json().catch(() => ({}))
         console.error("Failed to load club details:", response.status, errorData)
@@ -217,7 +208,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
 
   const handleDeletePost = useCallback(async (postId: string) => {
     if (!user?.id) return
-    
+
     if (!confirm("Are you sure you want to delete this post?")) {
       return
     }
@@ -229,7 +220,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
 
       if (response.ok) {
         // Remove post from local state
-        setPosts(posts.filter(p => p.id !== postId))
+        setPosts((prev) => prev.filter((p) => p.id !== postId))
       } else {
         const data = await response.json()
         alert(data.error || "Failed to delete post")
@@ -238,9 +229,57 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
       console.error("Error deleting post:", error)
       alert("Failed to delete post. Please try again.")
     }
-  }, [user?.id, posts])
+  }, [user?.id])
 
-  if (loading) {
+  // Same like/unlike flow as the home feed (components/homePage.tsx)
+  const handleLike = useCallback(async (postId: string, isLiked: boolean) => {
+    if (!user?.id) {
+      alert("Please log in to like posts")
+      return
+    }
+
+    try {
+      const response = isLiked
+        ? await fetch(`/api/posts/${postId}/like?userId=${encodeURIComponent(user.id)}`, {
+            method: "DELETE",
+          })
+        : await fetch(`/api/posts/${postId}/like`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user.id }),
+          })
+
+      if (response.ok) {
+        const data = await response.json()
+        setPosts((prev) =>
+          prev.map((post) =>
+            post.id === postId ? { ...post, isLiked: data.liked, likes_count: data.likeCount } : post
+          )
+        )
+      } else {
+        console.error("Error toggling like:", await response.json())
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error)
+    }
+  }, [user?.id])
+
+  const handleEmailAll = useCallback(() => {
+    // Everyone goes on the "To" line, except the sender
+    const emails = [...new Set(members.map((m) => m.email))].filter(
+      (email) => email && email !== user?.email
+    )
+    if (emails.length === 0) {
+      alert("This club has no other members to email yet.")
+      return
+    }
+    const subject = encodeURIComponent(club?.name ?? "")
+    window.location.href = `mailto:${emails.join(",")}?subject=${subject}`
+  }, [members, user?.email, club?.name])
+
+  // Only block the whole page on the first load; later refreshes (after an
+  // edit, join, etc.) keep it mounted so open dialogs stay open.
+  if (loading && !club) {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8 flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -255,324 +294,212 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
     return null
   }
 
-  const CategoryIcon = categoryIcons[club.category]
-  const isLeader = club.memberRole && ["president", "vice_president", "officer"].includes(club.memberRole)
+  const role = club.memberRole
+  // Which buttons to show comes from the server's list for this viewer (the
+  // rules live in lib/auth/permissions.ts, and the API enforces the same ones)
+  const can = (permission: Permission) => club.permissions.includes(permission)
+
+  const leaders = members.filter((m) => LEADERSHIP_ROLES.includes(m.role))
+  const regularMembers = members.filter((m) => m.role === "member")
+
+  let leaveButton: React.ReactNode = null
+  if (user?.id) {
+    if (club.is_sponsor) {
+      leaveButton = (
+        <Button variant="destructive" className={ACTION_BUTTON} onClick={handleLeaveSponsor}>
+          Leave
+        </Button>
+      )
+    } else if (role === "president") {
+      // Presidents can't just leave — they hand off or unclaim the club
+      leaveButton = (
+        <TransferPresidencyDialog
+          clubId={club.id}
+          clubName={club.name}
+          members={members}
+          currentUserId={user.id}
+          onSuccess={() => router.push("/")}
+          trigger={
+            <Button variant="destructive" className={ACTION_BUTTON}>
+              Leave
+            </Button>
+          }
+        />
+      )
+    } else {
+      leaveButton = (
+        <Button
+          variant={club.is_joined ? "destructive" : "default"}
+          className={ACTION_BUTTON}
+          onClick={handleJoinLeave}
+        >
+          {club.is_joined ? "Leave" : "Join"}
+        </Button>
+      )
+    }
+  }
 
   return (
-    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-6">
-      {/* Back Button */}
-      <Button 
-        variant="ghost" 
-        onClick={() => router.push("/?section=clubs")} 
-        className="mb-2 sm:mb-4 h-9 text-sm" 
-        size="sm"
-      >
-        <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-        Back to Clubs
-      </Button>
-
-      {/* Hero Section */}
-      <div className="relative h-48 sm:h-64 rounded-lg overflow-hidden">
-        <img
-          src={club.image_url || "/placeholder.svg"}
-          alt={club.name}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute bottom-3 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-6">
-          <div className="flex items-start justify-between">
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-4xl font-bold text-white mb-1.5 sm:mb-2 truncate">{club.name}</h1>
-              <div className="flex items-center gap-1.5 sm:gap-3 flex-wrap">
-                <Badge className={`${categoryColors[club.category]} text-xs`}>
-                  <CategoryIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                  {club.category}
-                </Badge>
-                {!club.is_claimed && (
-                  <Badge variant="outline" className="bg-sky-100 text-sky-800 border-sky-300 text-xs">
-                    Unclaimed
-                  </Badge>
-                )}
-                {isLeader && (
-                  <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300 text-xs">
-                    <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                    Leadership
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="relative pb-16">
+      {/* Header image: full-bleed, fading into the page background */}
+      <div className="absolute inset-x-0 top-0 h-56 sm:h-[300px] overflow-hidden">
+        {club.image_url && (
+          <img
+            src={club.image_url}
+            alt=""
+            className="w-full h-full object-cover"
+            style={{
+              maskImage: "linear-gradient(to bottom, black, transparent)",
+              WebkitMaskImage: "linear-gradient(to bottom, black, transparent)",
+            }}
+          />
+        )}
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Left Column - Club Info */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {/* About Section */}
-          <Card>
-            <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-              <CardTitle className="text-base sm:text-lg">About</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6 pb-3 sm:pb-6">
-              <p className="text-sm sm:text-base text-muted-foreground">{club.description}</p>
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 pt-36 sm:pt-52">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push("/?section=clubs")}
+          className="absolute top-4 left-4 sm:left-8"
+        >
+          <ArrowLeft />
+          Clubs
+        </Button>
 
-              {club.is_claimed && (club.meeting_time || club.location) && (
-                <>
-                  <Separator />
-                  <div className="space-y-1.5 sm:space-y-2">
-                    {club.meeting_time && (
-                      <div className="flex items-center gap-2 text-xs sm:text-sm">
-                        <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-                        <span className="truncate">{club.meeting_time}</span>
-                      </div>
-                    )}
-                    {club.location && (
-                      <div className="flex items-center gap-2 text-xs sm:text-sm">
-                        <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-                        <span className="truncate">{club.location}</span>
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
+        <h1
+          className={`${berkeley.className} text-5xl sm:text-6xl lg:text-7xl leading-none tracking-[-0.05em] break-words`}
+        >
+          {club.name}
+        </h1>
 
-              {club.tags && club.tags.length > 0 && (
-                <>
-                  <Separator />
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {club.tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Posts Section */}
-          <Card>
-            <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />
-                Recent Posts
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-              {posts.length > 0 ? (
-                <div className="space-y-3 sm:space-y-4">
-                  {posts.map((post) => {
-                    const isLeadership = club?.memberRole && ['president', 'vice_president', 'officer'].includes(club.memberRole)
-                    const canDelete = isLeadership || club?.is_sponsor
-                    
-                    // Debug logging
-                    console.log('Post delete check:', {
-                      postId: post.id,
-                      memberRole: club?.memberRole,
-                      isLeadership,
-                      canDelete
-                    })
-                    
-                    return (
-                      <div key={post.id} className="border rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className="min-w-0 flex-1">
-                            <p className="font-medium text-xs sm:text-sm truncate">{post.author_name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(post.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                          {canDelete && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeletePost(post.id)}
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8"
-                              title="Delete post"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          )}
-                        </div>
-                        <p className="text-xs sm:text-sm whitespace-pre-wrap">{renderTextWithLinks(post.content)}</p>
-                        {post.image_url && (
-                          <img
-                            src={post.image_url}
-                            alt="Post"
-                            className="rounded-lg w-full max-h-48 sm:max-h-64 object-cover"
-                          />
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <p className="text-center text-sm sm:text-base text-muted-foreground py-6 sm:py-8">No posts yet</p>
-              )}
-            </CardContent>
-          </Card>
+        <div className="mt-2 flex flex-wrap items-center gap-x-8 gap-y-2">
+          <p className="text-lg sm:text-xl">{club.description}</p>
+          {club.is_claimed && club.meeting_time && (
+            <span className="flex items-center gap-2.5 text-base">
+              <Calendar className="size-4 shrink-0" />
+              {club.meeting_time}
+            </span>
+          )}
+          {club.is_claimed && club.location && (
+            <span className="flex items-center gap-2.5 text-base">
+              <MapPin className="size-4 shrink-0" />
+              {club.location}
+            </span>
+          )}
         </div>
 
-        {/* Right Column - Sidebar */}
-        <div className="space-y-4 sm:space-y-6">
-          {/* Action Buttons */}
-          <Card>
-            <CardContent className="pt-4 sm:pt-6 space-y-2 sm:space-y-3 px-3 sm:px-6 pb-3 sm:pb-6">
-              {club.is_claimed ? (
-                <>
-                  {/* Create Post Button - for leaders and sponsors */}
-                  {user?.id && (isLeader || club.is_sponsor) && (
-                    <CreatePostDialog
-                      clubId={club.id}
-                      clubName={club.name}
-                      userId={user.id}
-                      onPostCreated={loadClubDetails}
-                    />
-                  )}
-
-                  {isLeader && (
-                    <>
-                      <EditClubDialog
-                        clubId={club.id}
-                        clubName={club.name}
-                        currentDescription={club.description}
-                        currentCategory={club.category}
-                        currentMeetingTime={club.meeting_time}
-                        currentLocation={club.location}
-                        currentImageUrl={club.image_url}
-                        onUpdateSuccess={loadClubDetails}
-                      />
-                      <ManageTagsDialog
-                        clubId={club.id}
-                        clubName={club.name}
-                        currentTags={club.tags || []}
-                        onUpdateSuccess={loadClubDetails}
-                      />
-                    </>
-                  )}
-                  {(club.memberRole === "president" || club.is_sponsor) && (
+        <div className="mt-7 flex flex-wrap items-center gap-5">
+          {club.is_claimed ? (
+            <>
+              {user?.id && can("post") && (
+                <CreatePostDialog
+                  clubId={club.id}
+                  clubName={club.name}
+                  userId={user.id}
+                  onPostCreated={loadClubDetails}
+                  trigger={<Button className={ACTION_BUTTON}>Post!</Button>}
+                />
+              )}
+              {user?.id && can("editClub") && (
+                <EditClubDialog
+                  clubId={club.id}
+                  clubName={club.name}
+                  currentDescription={club.description}
+                  currentCategory={club.category}
+                  currentMeetingTime={club.meeting_time}
+                  currentLocation={club.location}
+                  currentImageUrl={club.image_url}
+                  onUpdateSuccess={loadClubDetails}
+                  trigger={
+                    <Button variant="outline" className={ACTION_BUTTON}>
+                      Edit
+                    </Button>
+                  }
+                >
+                  {can("manageMembers") && (
                     <ManageLeadershipDialog
                       clubId={club.id}
                       clubName={club.name}
-                      currentUserId={user?.id || ""}
-                      isPresident={club.memberRole === "president"}
-                      isSponsor={club.is_sponsor}
+                      currentUserId={user.id}
+                      onUpdateSuccess={loadClubDetails}
                     />
                   )}
-                  {club.memberRole === "president" && (
-                    <TransferPresidencyDialog
+                  {can("manageTags") && (
+                    <ManageTagsDialog
                       clubId={club.id}
                       clubName={club.name}
-                      members={members}
-                      currentUserId={user?.id || ""}
-                      onSuccess={() => router.push("/")}
+                      currentTags={club.tags || []}
+                      onUpdateSuccess={loadClubDetails}
                     />
                   )}
-                  {user?.id && club.memberRole !== "president" && !club.is_sponsor && (
-                    <Button
-                      onClick={handleJoinLeave}
-                      variant={club.is_joined ? "destructive" : "default"}
-                      className="w-full h-9 sm:h-10 text-sm"
-                    >
-                      {club.is_joined ? "Leave Club" : "Join Club"}
-                    </Button>
-                  )}
-
-                  {/* Leave Sponsorship button for sponsors */}
-                  {user?.id && club.is_sponsor && (
-                    <Button
-                      variant="outline"
-                      className="w-full h-9 sm:h-8 text-sm"
-                      onClick={handleLeaveSponsor}
-                    >
-                      Leave Sponsorship
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <p className="text-xs sm:text-sm text-muted-foreground text-center py-2">
-                  This club is unclaimed. Visit the main clubs page to claim it.
-                </p>
+                </EditClubDialog>
               )}
-            </CardContent>
-          </Card>
+              {leaveButton}
+              {user?.id && can("emailAll") && (
+                <Button variant="outline" className={`${ACTION_BUTTON} sm:ml-auto`} onClick={handleEmailAll}>
+                  Email All
+                </Button>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              This club is unclaimed. Visit the main clubs page to claim it.
+            </p>
+          )}
+        </div>
 
-          {/* Presidents Info */}
-          {club.is_claimed && club.presidents && club.presidents.length > 0 && (
-            <Card>
-              <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-                <CardTitle className="text-sm sm:text-base">
-                  {club.presidents.length === 1 ? "Club President" : "Club Presidents"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                <div className="space-y-3">
-                  {club.presidents.map((president) => (
-                    <div key={president.id} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-sm sm:text-base truncate">{president.name}</p>
-                        <p className="text-xs sm:text-sm text-muted-foreground truncate">{president.email}</p>
-                      </div>
-                    </div>
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_15rem] gap-x-20 gap-y-3">
+          <h2 className="text-2xl font-black">Posts</h2>
+
+          <div className="space-y-6 lg:row-start-2">
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onLike={handleLike}
+                  onDelete={can("deleteAnyPost") || post.author_id === user?.id ? handleDeletePost : undefined}
+                />
+              ))
+            ) : (
+              <p className="rounded-2xl bg-[#eaeff1] py-12 text-center text-muted-foreground">No posts yet</p>
+            )}
+          </div>
+
+          <aside className="mt-6 lg:mt-0 lg:col-start-2 lg:row-start-2 self-start rounded-2xl bg-[#eaeff1] px-6 py-8 flex flex-col gap-8 text-right">
+            {leaders.length > 0 && (
+              <SidebarSection title="Leadership">
+                <div className="flex flex-col gap-3">
+                  {leaders.map((leader) => (
+                    <PersonWithEmail key={leader.id} name={leader.name} email={leader.email} />
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+              </SidebarSection>
+            )}
 
-          {/* Sponsors Info */}
-          {club.sponsors && club.sponsors.length > 0 && (
-            <Card>
-              <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-                <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
-                  {club.sponsors.length === 1 ? "Club Sponsor" : "Club Sponsors"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                <div className="space-y-3">
-                  {club.sponsors.map((sponsor) => (
-                    <div key={sponsor.id} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-sm sm:text-base truncate">{sponsor.name}</p>
-                        <p className="text-xs sm:text-sm text-muted-foreground truncate">{sponsor.email}</p>
-                      </div>
-                    </div>
+            {club.sponsors && club.sponsors.length > 0 && (
+              <SidebarSection title={club.sponsors.length === 1 ? "Sponsor" : "Sponsors"}>
+                {club.sponsors.map((sponsor) => (
+                  <PersonWithEmail key={sponsor.id} name={sponsor.name} email={sponsor.email} />
+                ))}
+              </SidebarSection>
+            )}
+
+            <SidebarSection title="Members">
+              {regularMembers.length > 0 ? (
+                <div className="flex flex-col gap-1">
+                  {regularMembers.map((member) => (
+                    <p key={member.id} className="text-base truncate">
+                      {formatDisplayName(member.name)}
+                    </p>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Members List */}
-          <Card>
-            <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-              <CardTitle className="text-sm sm:text-base flex items-center gap-2">
-                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                Members ({club.member_count})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-              <div className="space-y-2 sm:space-y-3 max-h-64 sm:max-h-96 overflow-y-auto">
-                {members.map((member) => {
-                  const RoleIcon = roleIcons[member.role as keyof typeof roleIcons] || Users
-                  return (
-                    <div key={member.id} className="flex items-center gap-2 sm:gap-3 min-w-0">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm font-medium truncate">{member.name}</p>
-                        <p className="text-xs text-muted-foreground capitalize flex items-center gap-1">
-                          <RoleIcon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                          {member.role.replace("_", " ")}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
+              ) : (
+                <p className="text-sm text-black/50">No members yet</p>
+              )}
+            </SidebarSection>
+          </aside>
         </div>
       </div>
     </div>

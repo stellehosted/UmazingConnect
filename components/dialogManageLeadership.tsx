@@ -30,8 +30,8 @@ interface ManageLeadershipDialogProps {
   clubId: string
   clubName: string
   currentUserId: string
-  isPresident: boolean
-  isSponsor?: boolean
+  // Called after any change so the page behind the dialog can refresh its leadership list
+  onUpdateSuccess?: () => void
 }
 
 const LEADERSHIP_ROLES = [
@@ -40,7 +40,8 @@ const LEADERSHIP_ROLES = [
   { value: 'officer', label: 'Officer', icon: Users },
 ]
 
-export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPresident, isSponsor }: ManageLeadershipDialogProps) {
+// Callers decide who may see this (the manageMembers permission, see lib/auth/permissions.ts).
+export function ManageLeadershipDialog({ clubId, clubName, currentUserId, onUpdateSuccess }: ManageLeadershipDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [members, setMembers] = useState<ClubMember[]>([])
   const [leaders, setLeaders] = useState<ClubMember[]>([])
@@ -87,6 +88,7 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
 
       if (response.ok) {
         await loadMembers()
+        onUpdateSuccess?.()
         alert(`Member promoted to ${LEADERSHIP_ROLES.find(r => r.value === role)?.label} successfully!`)
       } else {
         const data = await response.json()
@@ -118,6 +120,7 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
 
         if (response.ok) {
           await loadMembers()
+          onUpdateSuccess?.()
           alert("Leader demoted successfully!")
         } else {
           const data = await response.json()
@@ -149,6 +152,7 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
 
       if (response.ok) {
         await loadMembers()
+        onUpdateSuccess?.()
         setNewLeaderEmail("")
         setNewLeaderRole("officer")
         alert("Leader added successfully!")
@@ -179,10 +183,6 @@ export function ManageLeadershipDialog({ clubId, clubName, currentUserId, isPres
       case 'officer': return 'bg-green-100 text-green-800'
       default: return 'bg-gray-100 text-gray-800'
     }
-  }
-
-  if (!isPresident && !isSponsor) {
-    return null
   }
 
   return (

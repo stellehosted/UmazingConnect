@@ -120,21 +120,33 @@ export async function GET(
     `
     const membersResult = await pool.query(membersQuery, [clubId])
 
-    // Get recent posts (limit to 20 for performance)
+    // Get recent posts (limit to 20 for performance), shaped like the feed's
+    // posts so the club page can render them with PostCard.
     // Handle case where posts table might not exist yet
     let postsResult
     try {
       const postsQuery = `
-        SELECT 
+        SELECT
           p.id,
+          p.club_id,
+          p.title,
           p.content,
           p.image_url,
+          COUNT(DISTINCT pl.id)::int as likes_count,
+          0 as comments_count,
           p.created_at,
+          p.user_id as author_id,
           u.name as author_name,
-          u.avatar_url as author_avatar
+          u.avatar_url as author_avatar,
+          u.email as author_email,
+          c.name as club_name,
+          c.image_url as club_avatar
         FROM posts p
         JOIN users u ON p.user_id = u.id
+        JOIN clubs c ON p.club_id = c.id
+        LEFT JOIN post_likes pl ON p.id = pl.post_id
         WHERE p.club_id = $1
+        GROUP BY p.id, u.id, u.name, u.avatar_url, u.email, c.name, c.image_url
         ORDER BY p.created_at DESC
         LIMIT 20
       `
@@ -143,6 +155,20 @@ export async function GET(
       console.log('Posts table not found or error fetching posts, returning empty array')
       postsResult = { rows: [] }
     }
+
+    // Mark which posts the current user has liked
+    let likedPostIds = new Set<string>()
+    if (userId && postsResult.rows.length > 0) {
+      const likesResult = await pool.query(
+        `SELECT post_id FROM post_likes WHERE user_id = $1 AND post_id = ANY($2::uuid[])`,
+        [userId, postsResult.rows.map((p: any) => p.id)]
+      )
+      likedPostIds = new Set(likesResult.rows.map((r: any) => r.post_id))
+    }
+    const posts = postsResult.rows.map((post: any) => ({
+      ...post,
+      isLiked: likedPostIds.has(post.id),
+    }))
 
     // Check if current user is a member and their role, and if they are a sponsor
     let userMembership = null
@@ -176,7 +202,7 @@ export async function GET(
           ),
         },
         members: membersResult.rows,
-        posts: postsResult.rows,
+        posts,
       },
     })
   } catch (error) {
