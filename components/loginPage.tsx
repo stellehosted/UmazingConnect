@@ -221,7 +221,7 @@ export function LoginScreen() {
   }
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden" style={{ background: BG }}>
+    <div className="fixed inset-0 overflow-hidden overscroll-none touch-none" style={{ background: BG }}>
       {/* Landscape gets the Sketch composition at any size; portrait — phone or
           tablet — gets the stacked one. Branching on orientation rather than
           width keeps a landscape phone off the portrait layout, whose vw-based

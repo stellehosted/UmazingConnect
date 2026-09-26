@@ -387,7 +387,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
   return (
     <div className="relative pb-16">
       {/* Header image: full-bleed, fading into the page background */}
-      <div className="absolute inset-x-0 top-0 h-56 sm:h-[300px] overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-[calc(14rem+env(safe-area-inset-top))] sm:h-[300px] overflow-hidden">
         {club.image_url && (
           <img
             src={club.image_url}
@@ -401,12 +401,12 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
         )}
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 pt-36 sm:pt-52">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-8 pt-[calc(9rem+env(safe-area-inset-top))] sm:pt-52">
         <Button
           variant="outline"
           size="sm"
           onClick={() => router.push("/?section=clubs")}
-          className="absolute top-4 left-4 sm:left-8"
+          className="absolute top-[calc(1rem+env(safe-area-inset-top))] left-4 sm:left-8 sm:top-4"
         >
           <ArrowLeft />
           Clubs

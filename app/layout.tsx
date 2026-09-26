@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
+    // Edge-to-edge: page content draws under the status bar / Dynamic Island.
+    // iOS blurs that region, so interactive UI must sit below
+    // env(safe-area-inset-top) — see the top-inset padding on each page.
     statusBarStyle: 'black-translucent',
     title: 'BPS Compass',
   },

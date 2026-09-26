@@ -61,7 +61,7 @@ export default function FaqPage() {
   const router = useRouter()
 
   return (
-    <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-6">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 pb-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:py-8 space-y-4 sm:space-y-6">
       {/* Back Button */}
       <Button variant="ghost" onClick={() => router.back()} className="mb-2 sm:mb-4" size="sm">
         <ArrowLeft className="h-4 w-4 mr-2" />

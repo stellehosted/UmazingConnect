@@ -63,7 +63,7 @@ export function ProfileCreation() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center px-4 sm:px-6 py-4 sm:py-6">
           <CardTitle className="text-2xl sm:text-3xl">Create Your Profile</CardTitle>

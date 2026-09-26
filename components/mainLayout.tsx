@@ -73,7 +73,7 @@ function MainLayoutContent() {
         user={user}
         onLogout={logout}
       />
-      <main className="pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16">
+      <main className="pt-[env(safe-area-inset-top)] pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pt-16 md:pb-0">
         {renderContent()}
       </main>
     </div>
