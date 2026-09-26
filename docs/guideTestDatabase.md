@@ -1,4 +1,11 @@
-- `database/schema.sql`: SQL schema. Admin tables live in `migrations/add_admin_system_tables.sql`, and the reset script applies both.
-- `database/test-data.sql`: Adds two clubs: a fully populated and an empty one. It also defines the demo users (coordinator, sponsor, president, VP, officer, & member)
-- `scripts/reset-db.sh` **deletes** the target database first. It is for local development only.
+# database/schema.sql
+SQL schema. Admin tables live in `migrations/add_admin_system_tables.sql`, and the reset script applies both.
+
+# database/test-data.sql
+Adds two clubs: a fully populated and an empty one. It also defines the demo users (coordinator, sponsor, president, VP, officer, & member)
+
+# scripts/reset-db.sh
+**deletes** the target database first. It is for local development only.
+
+---
 - To act as a seeded user (e.g. the sponsor), change that user's email in the database to your own `@berkeleyprep.org` address and log in through Azure.

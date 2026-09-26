@@ -1,6 +1,6 @@
 # Azure AD App Setup Guide
 
-## 🔍 Finding Your Azure AD App
+## Finding Your Azure AD App
 
 ### Step 1: Access Azure Portal
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import localFont from "next/font/local"
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Calendar, MapPin, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { formatDisplayName } from "@/lib/utils"
@@ -27,7 +28,14 @@ const berkeley = localFont({
 // was divided by 1.5 and snapped to the nearest Tailwind step.
 
 // Buttons are 150x48 in the Button symbols; the height comes from size="default".
-const ACTION_BUTTON = "min-w-[150px]"
+//
+// ≤768px: Members panel & "Email All" button moves into a "Members" sheet. Remaining buttons shrink to share one row.
+// ≤512px: "Post!" gets its own full-width row above the rest.
+
+const ACTION_BUTTON =
+  "min-w-0 flex-1 px-2 text-sm min-[640px]:px-4 min-[640px]:text-base min-[769px]:flex-none min-[769px]:min-w-[150px] min-[769px]:px-6 min-[769px]:text-xl"
+// On the split phone layout Leave sits after Members (order-1 sorts it behind the default order-0)
+const LEAVE_BUTTON = `${ACTION_BUTTON} max-[513px]:order-1`
 
 interface ClubMember {
   id: string
@@ -306,7 +314,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
   if (user?.id) {
     if (club.is_sponsor) {
       leaveButton = (
-        <Button variant="destructive" className={ACTION_BUTTON} onClick={handleLeaveSponsor}>
+        <Button variant="destructive" className={LEAVE_BUTTON} onClick={handleLeaveSponsor}>
           Leave
         </Button>
       )
@@ -320,7 +328,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
           currentUserId={user.id}
           onSuccess={() => router.push("/")}
           trigger={
-            <Button variant="destructive" className={ACTION_BUTTON}>
+            <Button variant="destructive" className={LEAVE_BUTTON}>
               Leave
             </Button>
           }
@@ -330,7 +338,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
       leaveButton = (
         <Button
           variant={club.is_joined ? "destructive" : "default"}
-          className={ACTION_BUTTON}
+          className={LEAVE_BUTTON}
           onClick={handleJoinLeave}
         >
           {club.is_joined ? "Leave" : "Join"}
@@ -338,6 +346,43 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
       )
     }
   }
+
+  // Leadership, sponsors and members: the side panel above 768px, a sheet behind the Members button below
+  const peopleLists = (
+    <>
+      {leaders.length > 0 && (
+        <SidebarSection title="Leadership">
+          <div className="flex flex-col gap-3">
+            {leaders.map((leader) => (
+              <PersonWithEmail key={leader.id} name={leader.name} email={leader.email} />
+            ))}
+          </div>
+        </SidebarSection>
+      )}
+
+      {club.sponsors && club.sponsors.length > 0 && (
+        <SidebarSection title={club.sponsors.length === 1 ? "Sponsor" : "Sponsors"}>
+          {club.sponsors.map((sponsor) => (
+            <PersonWithEmail key={sponsor.id} name={sponsor.name} email={sponsor.email} />
+          ))}
+        </SidebarSection>
+      )}
+
+      <SidebarSection title="Members">
+        {regularMembers.length > 0 ? (
+          <div className="flex flex-col gap-1">
+            {regularMembers.map((member) => (
+              <p key={member.id} className="text-base truncate">
+                {formatDisplayName(member.name)}
+              </p>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-black/50">No members yet</p>
+        )}
+      </SidebarSection>
+    </>
+  )
 
   return (
     <div className="relative pb-16">
@@ -389,7 +434,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
           )}
         </div>
 
-        <div className="mt-7 flex flex-wrap items-center gap-5">
+        <div className="mt-7 flex flex-wrap items-center gap-2 min-[513px]:flex-nowrap min-[769px]:flex-wrap min-[769px]:gap-5">
           {club.is_claimed ? (
             <>
               {user?.id && can("post") && (
@@ -398,7 +443,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
                   clubName={club.name}
                   userId={user.id}
                   onPostCreated={loadClubDetails}
-                  trigger={<Button className={ACTION_BUTTON}>Post!</Button>}
+                  trigger={<Button className={`${ACTION_BUTTON} max-[513px]:w-full max-[513px]:flex-none`}>Post!</Button>}
                 />
               )}
               {user?.id && can("editClub") && (
@@ -437,7 +482,7 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
               )}
               {leaveButton}
               {user?.id && can("emailAll") && (
-                <Button variant="outline" className={`${ACTION_BUTTON} sm:ml-auto`} onClick={handleEmailAll}>
+                <Button variant="outline" className={`${ACTION_BUTTON} max-[769px]:hidden min-[769px]:ml-auto`} onClick={handleEmailAll}>
                   Email All
                 </Button>
               )}
@@ -447,12 +492,34 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
               This club is unclaimed. Visit the main clubs page to claim it.
             </p>
           )}
+
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" className={`${ACTION_BUTTON} min-[769px]:hidden`}>
+                Members
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[85%] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle className="text-2xl font-black">{club.name}</SheetTitle>
+                <SheetDescription className="sr-only">Leadership, sponsors and members of {club.name}</SheetDescription>
+              </SheetHeader>
+              <div className="flex flex-col gap-8 px-4 pb-8">
+                {user?.id && can("emailAll") && (
+                  <Button variant="outline" onClick={handleEmailAll}>
+                    Email All
+                  </Button>
+                )}
+                {peopleLists}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_15rem] gap-x-20 gap-y-3">
+        <div className="mt-12 grid grid-cols-1 min-[769px]:grid-cols-[minmax(0,1fr)_15rem] gap-x-8 lg:gap-x-20 gap-y-3">
           <h2 className="text-2xl font-black">Posts</h2>
 
-          <div className="space-y-6 lg:row-start-2">
+          <div className="space-y-6 min-[769px]:row-start-2">
             {posts.length > 0 ? (
               posts.map((post) => (
                 <PostCard
@@ -467,38 +534,8 @@ export function ClubDetailPage({ clubId }: { clubId: string }) {
             )}
           </div>
 
-          <aside className="mt-6 lg:mt-0 lg:col-start-2 lg:row-start-2 self-start rounded-2xl bg-[#eaeff1] px-6 py-8 flex flex-col gap-8 text-right">
-            {leaders.length > 0 && (
-              <SidebarSection title="Leadership">
-                <div className="flex flex-col gap-3">
-                  {leaders.map((leader) => (
-                    <PersonWithEmail key={leader.id} name={leader.name} email={leader.email} />
-                  ))}
-                </div>
-              </SidebarSection>
-            )}
-
-            {club.sponsors && club.sponsors.length > 0 && (
-              <SidebarSection title={club.sponsors.length === 1 ? "Sponsor" : "Sponsors"}>
-                {club.sponsors.map((sponsor) => (
-                  <PersonWithEmail key={sponsor.id} name={sponsor.name} email={sponsor.email} />
-                ))}
-              </SidebarSection>
-            )}
-
-            <SidebarSection title="Members">
-              {regularMembers.length > 0 ? (
-                <div className="flex flex-col gap-1">
-                  {regularMembers.map((member) => (
-                    <p key={member.id} className="text-base truncate">
-                      {formatDisplayName(member.name)}
-                    </p>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-black/50">No members yet</p>
-              )}
-            </SidebarSection>
+          <aside className="hidden min-[769px]:flex min-[769px]:col-start-2 min-[769px]:row-start-2 self-start rounded-2xl bg-[#eaeff1] px-6 py-8 flex-col gap-8 text-right">
+            {peopleLists}
           </aside>
         </div>
       </div>
